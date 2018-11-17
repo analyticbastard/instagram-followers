@@ -6,7 +6,9 @@
              [instagram :as instagram]
              [logging :as logging]
              [nrepl :as nrepl]]
-            [instagram-followers.web.endpoints :as endpoints]
+            [instagram-followers.web
+             [controllers :as controllers]
+             [endpoints :as endpoints]]
             [system.components
              [endpoint :refer [new-endpoint]]
              [handler :refer [new-handler]]
@@ -22,6 +24,7 @@
                   :handler (new-handler :router :bidi)
                   :middleware (new-middleware {} #_{:middleware [wrap]})
                   :endpoint (new-endpoint endpoints/endpoint)]
+                 [:site.top/index (controllers/map->SiteTopIndexController {})]
                  (when-not (= :dev profile)
                    [:nrepl (nrepl/map->NReplServer {:port 7888})]))))
 
@@ -30,6 +33,7 @@
    :scheduler {:handler :instagram
                :logging :logging}
    :handler [:endpoint :middleware]
+   :endpoint [:site.top/index]
    :web [:handler]})
 
 (defn new-system [profile]

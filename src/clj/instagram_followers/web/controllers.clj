@@ -1,5 +1,8 @@
-(ns instagram-followers.controllers
+(ns instagram-followers.web.controllers
   (:require [com.stuartsierra.component :as component]
+            [instagram-followers
+             [view :as view]]
+            [instagram-followers.views.top :as top]
             [ring.util.response :as res]
             [rum.core :as rum]))
 
@@ -13,10 +16,10 @@
 (defrecord SiteTopIndexController []
   component/Lifecycle
   (start [component]
-    (assoc component :controller (fn [req] (rum-ok (layout (top/index))))))
+    (assoc component :controller (fn [req] (rum-ok (view/layout (top/index))))))
   (stop [component] (dissoc component :controller)))
 
-(defrecord SiteCategoryShowController []
+#_(defrecord SiteCategoryShowController []
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req]
@@ -27,7 +30,7 @@
                                           :items (item-model/find-by-category category)}))))))
   (stop [component] (dissoc component :controller)))
 
-(defrecord SiteItemShowController []
+#_(defrecord SiteItemShowController []
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req]
@@ -36,7 +39,7 @@
                                      (res/rum-ok (item/show {:item item}))))))
   (stop [component] (dissoc component :controller)))
 
-(defrecord ApiBookIndexController []
+#_(defrecord ApiBookIndexController []
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req] {:status 200 :body [{:title "hoge" :author "fuga"}]})))

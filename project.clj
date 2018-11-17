@@ -39,7 +39,8 @@
              :dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]
                                   [com.stuartsierra/component.repl "0.2.0"]
                                   [figwheel-sidecar "0.5.17"]]}}
-
+  :repl-options {:timeout 250000
+                 :init-ns user}
   :javac-options ["--add-modules java.xml.bind"]
   :cljsbuild {:builds [{:source-paths ["src/cljs" "src/cljc"]
                         :compiler {:main "front.web.client"

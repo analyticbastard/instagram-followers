@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component.repl :refer [reset set-init start stop system]]
             [instagram-followers
-             [instagram :as istagram]
+             [instagram :as instagram]
              [system :as system]])
   (:gen-class))
 
