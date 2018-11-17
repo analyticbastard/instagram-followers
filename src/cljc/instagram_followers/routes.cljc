@@ -4,7 +4,7 @@
   [""
    {;; site
     "/" :site.top/index
-    "/categories" {["/" :category] :site.category/show}
+    "/login" {["/" :category] :site.login/get}
     "/items" {["/" :item-id] :site.item/show}
     ;; api
     "/api"

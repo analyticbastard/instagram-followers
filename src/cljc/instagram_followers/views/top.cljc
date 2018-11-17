@@ -1,4 +1,8 @@
 (ns instagram-followers.views.top)
 
 (defn index []
-  [:h1.title "Hello from root."])
+  [:div
+   [:h1.title "Welcome"]
+   [:div
+    [:form {:action "/login"}
+     [:input {:type "password"}]]]])

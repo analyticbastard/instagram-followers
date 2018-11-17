@@ -24,8 +24,11 @@
                  [ring/ring-defaults "0.3.1"]
                  [rum "0.11.2"]
                  [bidi "2.1.3"]
+                 [yada "1.2.15"]
                  [metosin/muuntaja "0.5.0"]
                  [venantius/accountant "0.2.4"]
+                 [org.openid4java/openid4java "1.0.0" ;; NOTE: incompatible with clj-http
+                  :exclusions [org.apache.httpcomponents/httpclient]]
 
                  ;; Logging
                  [org.clojure/tools.logging "0.2.6"]
