@@ -23,6 +23,7 @@
                  [ring "1.6.3"]
                  [ring/ring-defaults "0.3.1"]
                  [rum "0.11.2"]
+                 [garden "1.3.6"]
                  [bidi "2.1.3"]
                  [yada "1.2.15"]
                  [metosin/muuntaja "0.5.0"]

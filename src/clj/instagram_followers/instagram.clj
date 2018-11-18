@@ -95,8 +95,13 @@
   component/Lifecycle
   (start [this]
     #_(assoc this :users (get-followers this))
-    this)
+    (assoc this :cookie (atom "") :csrftoken (atom "")))
 
   (stop [this]
     this))
 
+(defn update-cookie! [component value]
+  (reset! (:cookie component) value))
+
+(defn update-csrftoken! [component value]
+  (reset! (:csrftoken component) value))
