@@ -29,6 +29,7 @@
                   :endpoint (new-endpoint endpoints/endpoint)]
                  [:site.top/index (controllers/map->SiteTopIndexController {})
                   :site.data/index (controllers/map->SiteDataIndexController {})
+                  :site.data/start-stop (controllers/map->SiteStartStopController {})
                   :site.data/post (controllers/map->SitePostController {})
                   :site/styles (controllers/map->SiteStylesController {})]
                  (when-not (= :dev profile)
@@ -40,8 +41,9 @@
                :logging :logging}
    :handler [:endpoint :middleware]
    :site.data/post [:instagram]
-   :site.data/index [:instagram]
-   :endpoint [:site.top/index :site.data/index :site/styles :site.data/post]
+   :site.data/start-stop [:scheduler]
+   :site.data/index [:scheduler]
+   :endpoint [:site.top/index :site.data/index :site/styles :site.data/post :site.data/start-stop]
    :web [:handler]})
 
 (defn new-system [profile]

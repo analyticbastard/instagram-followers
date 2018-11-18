@@ -3,6 +3,7 @@
             [garden.core :refer [css]]
             [instagram-followers
              [instagram :as instagram]
+             [scheduler :as scheduler]
              [view :as view]]
             [instagram-followers.views
              [data :as data]
@@ -28,9 +29,20 @@
 
 (defrecord SiteDataIndexController []
   component/Lifecycle
-  (start [{:keys [instagram] :as component}]
+  (start [{:keys [scheduler] :as component}]
     (assoc component :controller (fn [req]
-                                   (rum-ok (view/layout (data/index (instagram/is-running? instagram)))))))
+                                   (rum-ok (view/layout (data/index (scheduler/is-running? scheduler)))))))
+  (stop [component] (dissoc component :controller)))
+
+(defrecord SiteStartStopController []
+  component/Lifecycle
+  (start [{:keys [scheduler] :as component}]
+    (assoc component :controller (fn [req]
+                                   (println "XXXX" scheduler)
+                                   (if (scheduler/is-running? scheduler)
+                                     (.disable scheduler)
+                                     (.enable scheduler))
+                                   (rum-ok (view/layout (data/index (scheduler/is-running? scheduler)))))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SitePostController []

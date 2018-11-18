@@ -1,6 +1,6 @@
 (ns instagram-followers.scheduler
-  (:require [com.stuartsierra.component :as component]
-            [bonney.core :as bonney]))
+  (:require [bonney.core :as bonney]
+            [com.stuartsierra.component :as component]))
 
 (defprotocol Activable
   (enable [_])
@@ -30,3 +30,6 @@
     (cond-> this
             @active? (-> (update :job swap! bonney/kill)
                          (update :active? reset! false)))))
+
+(defn is-running? [component]
+  (boolean (-> component :active? deref)))
