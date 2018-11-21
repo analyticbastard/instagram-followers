@@ -33,9 +33,9 @@
 
                  ;; Logging
                  [org.clojure/tools.logging "0.2.6"]
-                 [ch.qos.logback/logback-classic "1.1.2" :exclusions [org.slf4j/slf4j-api]]
-                 [ch.qos.logback/logback-access "1.1.2"]
-                 [ch.qos.logback/logback-core "1.1.2"]
+                 [ch.qos.logback/logback-classic "1.2.3" :exclusions [org.slf4j/slf4j-api]]
+                 [ch.qos.logback/logback-access "1.2.3"]
+                 [ch.qos.logback/logback-core "1.2.3"]
                  [org.slf4j/slf4j-api "1.7.6"]
                  [javax.xml.bind/jaxb-api "2.3.1"]
                  ]
