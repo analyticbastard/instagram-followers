@@ -4,14 +4,13 @@
             [com.stuartsierra.component :as component]
             [instagram-followers.liker :as liker]))
 
-(defn- wrap-errors [{:keys [active? job]} handler]
+(def kill-and-clear! (comp (constantly nil) bonney/kill))
+
+(defn- wrap-errors [{:keys [job]} handler]
   (fn []
-    (try
-      (handler)
-      (reset! active? true)
-      (catch Exception _
-        (reset! active? false)
-        (swap! job bonney/kill)))))
+    (when-not (try (handler)
+                   (catch Exception _ false))
+      (swap! job kill-and-clear!))))
 
 (defn schedule! [{:keys [interval pool] :as component} handler]
   (bonney/every interval
@@ -25,13 +24,12 @@
 
 (defrecord Scheduler [interval like-handler instagram]
   component/Lifecycle
-  (start [{:keys [active?] :as this}]
+  (start [{:keys [job] :as this}]
     (cond-> this
-            (or (not active?) (not @active?))
+            (or (not job) (not @job))
             (assoc :pool (bonney/create-pool :threads 1 :desc "Cron")
                    :job (atom nil)
-                   :initialized (atom false)
-                   :active? (atom false))))
+                   :initialized (atom false))))
 
   (stop [{:keys [job] :as this}]
     (cond-> this
@@ -45,7 +43,7 @@
 
   (disable [{:keys [job] :as this}]
     (cond-> this
-            @job (update :job swap! (comp (constantly nil) bonney/kill)))))
+            @job (update :job swap! kill-and-clear!))))
 
 (defn is-running? [component]
   (boolean (-> component :job deref)))

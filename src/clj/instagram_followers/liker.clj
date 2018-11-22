@@ -3,7 +3,7 @@
             [com.stuartsierra.component :as component]
             [instagram-followers.instagram :as instagram]))
 
-(defn make-like-handler [{:keys [max-users max-likes active instagram]}]
+(defn make-like-handler [{:keys [max-users max-likes instagram]}]
   (fn []
     (try (if-let [users (seq (instagram/get-users instagram))]
            (doseq [user (map #(% users) (repeat (rand-int max-users) rand-nth))
@@ -12,23 +12,16 @@
              (doseq [post-id (map #(% posts) (repeat (rand-int max-likes) rand-nth))]
                (instagram/like instagram post-id)))
            (instagram/initialize! instagram))
-         (reset! active true)
          (catch Exception _
-           (log/info "Error liking followers")
-           (reset! active false)))))
+           (log/info "Error liking followers")))))
 
 (defrecord Liker [instagram]
   component/Lifecycle
   (start [this]
-    (as-> (assoc this :active (atom false)) $
-          (assoc $ :handler (make-like-handler $))))
+    (assoc this :handler (make-like-handler this)))
 
   (stop [this]
-    (-> (update this :active reset! false)
-        (dissoc :handler))))
+    (dissoc :handler)))
 
 (defn get-handler [component]
   (:handler component))
-
-(defn is-active? [{:keys [active]}]
-  (deref active))
