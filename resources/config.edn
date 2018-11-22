@@ -1,1 +1,1 @@
-{:scheduler {:average 2000}}
+{:scheduler {:interval 2000}}

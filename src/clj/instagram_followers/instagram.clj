@@ -2,7 +2,8 @@
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.set :as set]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [clojure.tools.logging :as log]))
 
 (def url "https://www.instagram.com/graphql/query/")
 (def query-vars {:fetch_mutual true
@@ -70,16 +71,15 @@
                (when n (dec n)))
         concat-followers))))
 
-(defn get-profile [{:keys [cookie]} user]
-  (let [username (:username user)
-        url (format "https://www.instagram.com/%s/?__a=1" username)
+(defn get-profile [{:keys [cookie]} {:keys [username] :as user}]
+  (let [url (format "https://www.instagram.com/%s/?__a=1" username)
         data (http/get url
                        (make-request-data
                          (make-headers cookie)))]
     (json/decode (:body data) keyword)))
 
-(defn get-posts-id [{:keys [post-newest num-likes]} user]
-  (->> (get-in user [:graphql :user :edge_owner_to_timeline_media :edges])
+(defn get-posts-ids [{:keys [post-newest num-likes]} user-profile]
+  (->> (get-in user-profile [:graphql :user :edge_owner_to_timeline_media :edges])
        (take post-newest)
        shuffle
        (take num-likes)
@@ -91,11 +91,13 @@
                    (assoc (make-headers cookie)
                      "X-CSRFToken" csrftoken)))))
 
-(defrecord Instagram [user-data cookie csrftoken post-newest num-likes]
+(defrecord Instagram [user-data cookie csrftoken post-newest max-likes initializing]
   component/Lifecycle
   (start [this]
-    #_(assoc this :users (get-followers this))
-    (assoc this :cookie (atom "") :csrftoken (atom "")))
+    (assoc this :cookie (atom "")
+                :csrftoken (atom "")
+                :users (atom [])
+                :initializing (atom false)))
 
   (stop [this]
     this))
@@ -105,3 +107,15 @@
 
 (defn update-csrftoken! [component value]
   (reset! (:csrftoken component) value))
+
+(defn get-users [component]
+  (-> component :users deref))
+
+(defn initialize! [{:keys [initializing users] :as component}]
+  (when-not (deref initializing)
+    (reset! initializing true)
+    (try (reset! users (get-followers component))
+         (catch Exception e
+           (log/info (str "Could not initialize: " e)))
+         (finally
+           (reset! initializing false)))))
