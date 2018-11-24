@@ -5,15 +5,17 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :main ^:skip-aot instagram-followers.core
   :target-path "target/%s"
-  :source-paths ["src/clj" "src/cljc" "dev"]
+  :source-paths ["src/clj" "src/cljc"]
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async "0.4.474"]
                  [org.clojure/tools.reader "1.3.2"] ;; for :as :clojure
+                 [org.clojure/tools.nrepl "0.2.13"]
                  
                  [aero "1.1.3"]
 
                  [com.stuartsierra/component "0.3.2"]
+                 [com.stuartsierra/component.repl "0.2.0"]
                  [org.danielsz/system "0.4.1"]
                  [bonney "0.1.0"]
 
@@ -42,8 +44,8 @@
                  [javax.xml.bind/jaxb-api "2.3.1"]
                  ]
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]
-                                  [com.stuartsierra/component.repl "0.2.0"]
+             :dev {:source-paths ["dev"]
+                   :dependencies [[org.clojure/tools.namespace "0.2.11"]
                                   [figwheel-sidecar "0.5.17"]]}}
   :repl-options {:timeout 250000
                  :init-ns user}
