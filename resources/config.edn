@@ -4,7 +4,7 @@
                 :join? false}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
- :scheduler    {:interval #profile {:dev     2000
+ :scheduler    {:interval #profile {:dev     10000
                                     :default #or [#env IL_INTERVAL 300000]}}
  :like-handler {:max-users   #or [#env IL_USERS 10]
                 :max-likes   #or [#env IL_MAXLIKES 4]

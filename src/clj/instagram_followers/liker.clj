@@ -20,8 +20,9 @@
                (Thread/sleep interval)
                (instagram/like instagram post-id)))
            (instagram/initialize! instagram))
-         (catch Exception _
-           (log/info "Error liking followers")))))
+         (catch Exception e
+           (log/info "Error liking followers")
+           (log/info e)))))
 
 (defrecord Liker [post-newest max-users max-likes instagram]
   component/Lifecycle
