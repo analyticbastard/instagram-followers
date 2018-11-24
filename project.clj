@@ -3,6 +3,7 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :min-lein-version "2.7.1"
   :main ^:skip-aot instagram-followers.core
   :target-path "target/%s"
   :source-paths ["src/clj" "src/cljc"]
