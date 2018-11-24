@@ -34,7 +34,7 @@
   (dispatch :change-view-keyword-by-url value)
   (assoc state :url value))
 
-#_(defmethod transform :change-view-keyword-by-url
+(defmethod transform :change-view-keyword-by-url
   [state value]
-  (let [{k :handler} (bidi.bidi/match-route jp.blackawa.example.route/route value)]
+  (let [{k :handler} (bidi.bidi/match-route instagram-followers.routes/routes value)]
     (assoc state :view-kw k)))

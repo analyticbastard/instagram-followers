@@ -1,5 +1,6 @@
 (ns instagram-followers.view
-  (:require [rum.core :as rum]))
+  (:require [rum.core :as rum]
+    #?(:cljs [instagram-followers.flow :refer [dispatch]])))
 
 
 (defn html-headers []
@@ -16,7 +17,7 @@
              :defer true
              :integrity "sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ"
              :crossorigin "anonymous"}]
-   #_[:script {:src "/js/main.js"}]])
+   #_[:script {:src "/public/js/main.js"}]])
 
 (rum/defc header [{:keys [cart-item-num]}]
   [:nav.navbar.is-light {:role "navigation" :aria-label "main navigation"}
@@ -26,13 +27,11 @@
     [:div.navbar-burger
      [:span] [:span] [:span]]]])
 
-(rum/defc price [n]
-  [:span [:span {:dangerouslySetInnerHTML {:__html "&yen;"}}] [:span n]])
-
 (rum/defc current-view < rum/reactive [state]
   [:div
    [:p "View:" (:view state)]
-   [:div {:on-click (:clj nil) ;:cljs #(dispatch :sample 1)
+   [:div {:on-click #?(:cljs #(dispatch :sample 1)
+                       :clj nil)
           } "Sample:" (rum/react (:sample state))]])
 
 (rum/defc form [state]
@@ -40,11 +39,11 @@
    [:h1 (str "Hello, " (:name state))]
    [:input {:type      "input"
             :value     (or (:name state) "")
-            :on-change nil}] ;
+            :on-change #?(:clj nil :cljs #(dispatch :change-name (.. % -target -value)))}]
    [:h1 (str "View keyword: " (:view-kw state))]
    [:input {:type      "input"
             :value     (or (:url state) "")
-            :on-change nil}]])
+            :on-change #?(:clj nil :cljs #(dispatch :change-url (.. % -target -value)))}]])
 
 (rum/defc app < rum/reactive [state]
   [:div
