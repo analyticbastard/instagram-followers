@@ -1,18 +1,22 @@
 {:secrets      #include "secrets.edn"
- :web          {:options {:port  #profile {:dev 8080
-                                           :default #long #or [#env PORT "80"]}
+ :web          {:options {:port  #profile {:dev     8080
+                                           :default #or [#safelong #env PORT 80]}
                           :join? false}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
  :scheduler    {:interval #profile {:dev     10000
-                                    :default #or [#env IL_INTERVAL 300000]}}
+                                    :default #or [#env IL_INTERVAL 3600000]}}
  :like-handler {:max-users   #or [#env IL_USERS 10]
                 :max-likes   #or [#env IL_MAXLIKES 4]
-                :interval    #or [#env IL_LIKEINTERVAL 5000]
-                :post-newest #or [#env IL_NPAGES 2]}
- :instagram    {:initial-cookie #or [#ref [:secrets :cookie] ""]
-                :initial-token  #or [#ref [:secrets :token] ""]
-                :npages         #or [#env IL_NPAGES 2]
+                :interval    #profile {:dev     1000
+                                       :default #or [#env IL_LIKEINTERVAL 10000]}
+                :post-newest #or [#env IL_MAXPOSTS 15]}
+ :instagram    {:initial-cookie #or [#env IL_COOKIE
+                                     #ref [:secrets :cookie]]
+                :initial-token  #or [#env IL_TOKEN
+                                     #ref [:secrets :token]]
+                :npages         #profile {:dev     2
+                                          :default #env IL_NPAGES}
                 :user-data      {:id         #or [#env IL_ID
                                                   #ref [:secrets :id]]
                                  :query-hash #or [#env IL_HASH

@@ -3,14 +3,6 @@
             [clojure.java.io :as io]
             [clojure.string :as s]))
 
-(defmethod aero/reader 'split
-  [_ _ value]
-  (when value
-    (try
-      (s/split value #",")
-      (catch Exception _
-        nil))))
-
 (defmethod aero/reader 'set
   [_ _ value]
   (when value
@@ -19,21 +11,9 @@
       (catch Exception _
         nil))))
 
-(defmethod aero/reader 'map-keyword
-  [_ _ value]
-  (when value
-    (try
-      (map keyword value)
-      (catch Exception _
-        nil))))
-
-(defmethod aero/reader 'map-long
-  [_ _ value]
-  (when value
-    (try
-      (map #(aero/reader nil 'long %) value)
-      (catch Exception _
-        nil))))
+(defmethod aero/reader 'safelong
+  [opts tag value]
+  (when value (Long/parseLong (str value))))
 
 (defn config [profile]
   (-> "config.edn"

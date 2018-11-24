@@ -3,9 +3,9 @@
             [com.stuartsierra.component :as component]
             [instagram-followers.instagram :as instagram]))
 
-(defn get-posts-ids [{:keys [post-newest max-likes]} user-profile]
+(defn get-posts-ids [{:keys [max-posts max-likes]} user-profile]
   (->> (instagram/fetch-profile user-profile)
-       (take post-newest)
+       (take max-posts)
        shuffle
        (take max-likes)
        (map instagram/id)))
@@ -24,7 +24,7 @@
            (log/info "Error liking followers")
            (log/info e)))))
 
-(defrecord Liker [post-newest max-users max-likes instagram]
+(defrecord Liker [max-posts max-users max-likes instagram]
   component/Lifecycle
   (start [this]
     (assoc this :handler (make-like-handler this)))
