@@ -10,5 +10,5 @@
   (log/info "Starting instagram-followers")
   (.addShutdownHook (Runtime/getRuntime)
                     (Thread. (fn [] (stop))))
-  (set-init #(system/new-system :prod))
+  (set-init (fn [_] (system/new-system :prod)))
   (start))
