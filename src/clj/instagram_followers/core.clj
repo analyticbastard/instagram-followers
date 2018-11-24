@@ -10,8 +10,5 @@
   (log/info "Starting instagram-followers")
   (.addShutdownHook (Runtime/getRuntime)
                     (Thread. (fn [] (stop))))
-  (set-init #(system/new-system :dev #_(or (-> "X_DEPLOY_ENV"
-                                                       System/getenv
-                                                       keyword)
-                                                   :production)))
+  (set-init #(system/new-system :prod))
   (start))
