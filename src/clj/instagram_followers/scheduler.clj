@@ -10,7 +10,7 @@
   (fn []
     (when-not (try (handler)
                    (catch Exception _ false))
-      (swap! job kill-and-clear!))))
+      (when (and job @job) (swap! job kill-and-clear!)))))
 
 (defn schedule! [{:keys [interval pool] :as component} handler]
   (bonney/every interval
