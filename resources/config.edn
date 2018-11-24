@@ -1,7 +1,7 @@
 {:secrets      #include "secrets.edn"
- :web          {:port  #profile [:dev 8080
-                                 :default #env IL_PORT]
-                :join? false}
+ :web          {:options {:port  #profile {:dev 8080
+                                           :default #long #or [#env PORT "80"]}
+                          :join? false}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
  :scheduler    {:interval #profile {:dev     10000

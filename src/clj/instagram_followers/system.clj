@@ -14,7 +14,7 @@
             [system.components
              [endpoint :refer [new-endpoint]]
              [handler :refer [new-handler]]
-             [jetty :refer [new-jetty]]
+             [jetty :refer [map->WebServer]]
              [middleware :refer [new-middleware]]]))
 
 (defn new-system-map [profile]
@@ -23,7 +23,7 @@
                   :instagram (instagram/map->Instagram {})
                   :scheduler (scheduler/map->Scheduler {})
                   :like-handler (liker/map->Liker {})
-                  :web (new-jetty :port 8080)
+                  :web (map->WebServer {})
                   :handler (new-handler :router :bidi)
                   :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile) [:middleware :secret]))]} #_{:middleware [wrap]})
                   :endpoint (new-endpoint endpoints/endpoint)]
@@ -48,7 +48,6 @@
    :web [:handler]})
 
 (defn new-system [profile]
-  ;(logging/set-default-uncaught-exception-handler)
   (-> (new-system-map profile)
       (config/configure profile)
       (component/system-using (new-dependency-map profile))))
