@@ -1,1 +1,16 @@
-{:scheduler {:interval 2000}}
+{:secrets      #include "secrets.edn"
+ :web          {:port  #profile [:dev 8080
+                                 :default #env IL_PORT]
+                :join? false}
+ :middleware   {:secret #profile {:dev     "a 16-byte secret"
+                                  :default #env IL_SECRET}}
+ :scheduler    {:interval #profile {:dev     2000
+                                    :default #or [#env IL_INTERVAL 300000]}}
+ :like-handler {:max-users   #or [#env IL_USERS 10]
+                :max-likes   #or [#env IL_MAXLIKES 4]
+                :interval    #or [#env IL_LIKEINTERVAL 5000]
+                :post-newest #or [#env IL_NPAGES 2]}
+ :instagram    {:initial-cookie #or [#ref [:secrets :cookie]]
+                :initial-token  #or [#ref [:secrets :token]]
+                :npages         #or [#env IL_NPAGES 2]}
+ }

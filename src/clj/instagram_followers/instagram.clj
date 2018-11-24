@@ -78,12 +78,11 @@
                          (make-headers cookie)))]
     (json/decode (:body data) keyword)))
 
-(defn get-posts-ids [{:keys [post-newest num-likes]} user-profile]
-  (->> (get-in user-profile [:graphql :user :edge_owner_to_timeline_media :edges])
-       (take post-newest)
-       shuffle
-       (take num-likes)
-       (map #(get-in % [:node :id]))))
+(defn fetch-profile [user-profile]
+  (get-in user-profile [:graphql :user :edge_owner_to_timeline_media :edges]))
+
+(defn id [user]
+  (get-in user [:node :id]))
 
 (defn like [{:keys [cookie csrftoken]} post-id]
   (-> (format "https://www.instagram.com/web/likes/%s/like/" post-id)
@@ -91,11 +90,11 @@
                    (assoc (make-headers cookie)
                      "X-CSRFToken" csrftoken)))))
 
-(defrecord Instagram [user-data cookie csrftoken post-newest max-likes initializing]
+(defrecord Instagram [initial-cookie initial-token npages cookie csrftoken user-data initializing]
   component/Lifecycle
   (start [this]
-    (assoc this :cookie (atom "")
-                :csrftoken (atom "")
+    (assoc this :cookie (atom initial-cookie)
+                :csrftoken (atom initial-token)
                 :users (atom [])
                 :initializing (atom false)))
 

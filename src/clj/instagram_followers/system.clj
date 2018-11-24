@@ -9,10 +9,8 @@
              [scheduler :as scheduler]]
             [instagram-followers.web
              [controllers :as controllers]
-             [endpoints :as endpoints]]
-            [ring.middleware
-             [multipart-params :refer [wrap-multipart-params multipart-params-request]]
-             [params :refer [wrap-params]]]
+             [endpoints :as endpoints]
+             [middleware :as middleware]]
             [system.components
              [endpoint :refer [new-endpoint]]
              [handler :refer [new-handler]]
@@ -27,9 +25,10 @@
                   :like-handler (liker/map->Liker {})
                   :web (new-jetty :port 8080)
                   :handler (new-handler :router :bidi)
-                  :middleware (new-middleware {:middleware [wrap-params]} #_{:middleware [wrap]})
+                  :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile) [:middleware :secret]))]} #_{:middleware [wrap]})
                   :endpoint (new-endpoint endpoints/endpoint)]
-                 [:site.top/index (controllers/map->SiteTopIndexController {})
+                 [:site.top/index (controllers/map->SiteTopLevelController {})
+                  :site.login/get (controllers/map->SiteLoginController {})
                   :site.data/index (controllers/map->SiteDataIndexController {})
                   :site.data/start-stop (controllers/map->SiteStartStopController {})
                   :site.data/post (controllers/map->SitePostController {})
@@ -45,7 +44,7 @@
    :site.data/post [:instagram]
    :site.data/start-stop [:scheduler :site.data/index]
    :site.data/index [:scheduler]
-   :endpoint [:site.top/index :site.data/index :site/styles :site.data/post :site.data/start-stop]
+   :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop]
    :web [:handler]})
 
 (defn new-system [profile]

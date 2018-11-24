@@ -2,7 +2,9 @@
 
 (defn index []
   [:div
-   [:h1.title "Welcome"]
-   [:div
-    [:form {:action "/login"}
-     [:input {:type "password"}]]]])
+   [:div {:class "center"}
+    [:h1.title "Welcome"]
+    [:form {:action "/login" :method "POST"}
+     [:div "Username" [:input {:type "text" :name "username"}]]
+     [:div "Password" [:input {:type "password" :name "password"}]]
+     [:div [:input {:type "submit" :class "button" :value "Login"}]]]]])

@@ -19,17 +19,17 @@
 
                  [cheshire "5.8.1"]
                  [clj-http "3.9.1"]
+                 [metosin/muuntaja "0.5.0"]
 
                  [ring "1.6.3"]
                  [ring/ring-defaults "0.3.1"]
-                 [rum "0.11.2"]
-                 [garden "1.3.6"]
+                 [com.cemerick/friend "0.2.3"]
                  [bidi "2.1.3"]
                  [yada "1.2.15"]
-                 [metosin/muuntaja "0.5.0"]
+
+                 [rum "0.11.2"]
+                 [garden "1.3.6"]
                  [venantius/accountant "0.2.4"]
-                 [org.openid4java/openid4java "1.0.0" ;; NOTE: incompatible with clj-http
-                  :exclusions [org.apache.httpcomponents/httpclient]]
 
                  ;; Logging
                  [org.clojure/tools.logging "0.2.6"]
@@ -37,6 +37,8 @@
                  [ch.qos.logback/logback-access "1.2.3"]
                  [ch.qos.logback/logback-core "1.2.3"]
                  [org.slf4j/slf4j-api "1.7.6"]
+
+                 ;; Java > 8
                  [javax.xml.bind/jaxb-api "2.3.1"]
                  ]
   :profiles {:uberjar {:aot :all}
