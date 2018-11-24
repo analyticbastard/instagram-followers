@@ -3,11 +3,11 @@
             [com.stuartsierra.component :as component]
             [instagram-followers.instagram :as instagram]))
 
-(defn get-posts-ids [{:keys [post-newest num-likes]} user-profile]
+(defn get-posts-ids [{:keys [post-newest max-likes]} user-profile]
   (->> (instagram/fetch-profile user-profile)
        (take post-newest)
        shuffle
-       (take num-likes)
+       (take max-likes)
        (map instagram/id)))
 
 (defn make-like-handler [{:keys [max-users max-likes interval instagram] :as this}]

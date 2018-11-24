@@ -61,7 +61,7 @@
     (let [next-vars (if cursor (assoc query-vars :after cursor) query-vars)
           {:keys [control followers]} (request url
                                                (make-query-params user-data next-vars)
-                                               (make-headers cookie))
+                                               (make-headers @cookie))
           public-followers (remove :is_private followers)
           concat-followers (concat cumm-followers public-followers)]
       (if (and (:next-page? control)
@@ -75,7 +75,7 @@
   (let [url (format "https://www.instagram.com/%s/?__a=1" username)
         data (http/get url
                        (make-request-data
-                         (make-headers cookie)))]
+                         (make-headers @cookie)))]
     (json/decode (:body data) keyword)))
 
 (defn fetch-profile [user-profile]
@@ -87,8 +87,8 @@
 (defn like [{:keys [cookie csrftoken]} post-id]
   (-> (format "https://www.instagram.com/web/likes/%s/like/" post-id)
       (http/post (make-request-data
-                   (assoc (make-headers cookie)
-                     "X-CSRFToken" csrftoken)))))
+                   (assoc (make-headers @cookie)
+                     "X-CSRFToken" @csrftoken)))))
 
 (defrecord Instagram [initial-cookie initial-token npages cookie csrftoken user-data initializing]
   component/Lifecycle
