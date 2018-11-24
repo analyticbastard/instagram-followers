@@ -21,7 +21,7 @@
         [:div.buttons.is-centered
          [:p.control
           [:button {:type "submit" :class (str "button is-medium " (if is-running? "is-danger" "is-success"))}
-           [:span.icon-is-medium [:i.fas.fa-play]]
+           [:span.icon-is-medium [:i {:class (str "fas " (if is-running? "fa-pause" "fa-play"))}]]
            [:span (if is-running? "Stop" "Start")]]]]]]]]
     [:div.tile.is-parent
      [:article.tile.is-child.notification
