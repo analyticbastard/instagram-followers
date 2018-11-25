@@ -20,7 +20,7 @@
                 :initial-token  #or [#env IL_TOKEN
                                      #ref [:secrets :token]]
                 :npages         #profile {:dev     2
-                                          :default #env IL_NPAGES}
+                                          :default #safelong #env IL_NPAGES}
                 :user-data      {:id         #or [#env IL_ID
                                                   #ref [:secrets :id]]
                                  :query-hash #or [#env IL_HASH
