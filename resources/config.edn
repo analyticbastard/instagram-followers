@@ -10,8 +10,8 @@
                                     :default #env IL_PASSWORD}}
  :scheduler    {:interval #profile {:dev     20000
                                     :default #or [#safelong #env IL_INTERVAL 1800000]}}
- :like-handler {:max-users #or [#env IL_USERS 10]
-                :max-likes #or [#env IL_MAXLIKES 4]
+ :like-handler {:max-users #or [#safelong #env IL_USERS 10]
+                :max-likes #or [#safelong #env IL_MAXLIKES 4]
                 :interval  #profile {:dev     1000
                                      :default #or [#safelong #env IL_LIKEINTERVAL 10000]}
                 :max-posts #or [#env IL_MAXPOSTS 15]}
