@@ -13,7 +13,7 @@
        (map instagram/id)))
 
 (defn make-like-handler [{:keys [max-users max-likes interval stats instagram] :as this}]
-  (fn []
+  (fn ! []
     (try (if-let [users (seq (instagram/get-users instagram))]
            (let [num-users (rand-int max-users)
                  num-likes (rand-int max-likes)]
@@ -26,7 +26,9 @@
              (swap! stats update :likes + num-likes)
              (log/info "Likes given in this round" num-likes)
              (log/info "Likes given in total" (-> stats deref :likes)))
-           (instagram/initialize! instagram))
+           (do
+             (instagram/initialize! instagram)
+             (!)))
          (catch Exception e
            (log/info "Error liking followers")
            (log/info e)))))

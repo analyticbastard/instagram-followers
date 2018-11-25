@@ -54,10 +54,11 @@
                 :size (:count data))
      :followers (map #(get % :node) (:edges data))}))
 
-(defn get-followers [{:keys [user-data cookie npages]}]
+(defn get-followers [{:keys [user-data interval npages cookie]}]
   (loop [cursor nil
          cumm-followers []
          n (when npages (dec npages))]
+    (Thread/sleep interval)
     (let [next-vars (if cursor (assoc query-vars :after cursor) query-vars)
           {:keys [control followers]} (request url
                                                (make-query-params user-data next-vars)
