@@ -20,7 +20,7 @@
              (doseq [user (map #(% users) (repeat num-users rand-nth))
                      :let [profile (instagram/get-profile instagram user)
                            posts (get-posts-ids this profile)
-                           num-likes (rand-int max-likes)]]
+                           num-likes (min (count posts) (inc (rand-int max-likes)))]]
                (doseq [post-id (map #(% posts) (repeat num-likes rand-nth))]
                  (Thread/sleep interval)
                  (instagram/like instagram post-id)
