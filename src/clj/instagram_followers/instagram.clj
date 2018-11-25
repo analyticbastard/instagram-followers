@@ -113,8 +113,10 @@
 (defn initialize! [{:keys [initializing users] :as component}]
   (when-not (deref initializing)
     (reset! initializing true)
-    (try (reset! users (get-followers component))
-         (catch Exception e
-           (log/info (str "Could not initialize: " e)))
-         (finally
-           (reset! initializing false)))))
+    (let [followers (get-followers component)]
+      (log/info (str "Retrieved " (count followers) " followers"))
+      (try (reset! users followers)
+           (catch Exception e
+             (log/info (str "Could not initialize: " e)))
+           (finally
+             (reset! initializing false))))))

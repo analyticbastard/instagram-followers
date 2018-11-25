@@ -23,7 +23,9 @@
                (doseq [post-id (map #(% posts) (repeat num-likes rand-nth))]
                  (Thread/sleep interval)
                  (instagram/like instagram post-id)))
-             (swap! stats update :likes + num-likes))
+             (swap! stats update :likes + num-likes)
+             (log/info "Likes given in this round" num-likes)
+             (log/info "Likes given in total" (-> stats deref :likes)))
            (instagram/initialize! instagram))
          (catch Exception e
            (log/info "Error liking followers")
