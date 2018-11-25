@@ -4,6 +4,10 @@
                           :join? false}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
+ :auth         {:username #profile {:dev     #ref [:secrets :login]
+                                    :default #env IL_LOGIN}
+                :password #profile {:dev #ref [:secrets :password]
+                                    :default #env IL_PASSWORD}}
  :scheduler    {:interval #profile {:dev     10000
                                     :default #or [#env IL_INTERVAL 3600000]}}
  :like-handler {:max-users #or [#env IL_USERS 10]

@@ -15,7 +15,8 @@
              [endpoint :refer [new-endpoint]]
              [handler :refer [new-handler]]
              [jetty :refer [map->WebServer]]
-             [middleware :refer [new-middleware]]]))
+             [middleware :refer [new-middleware]]]
+            [instagram-followers.web.auth :as auth]))
 
 (defn new-system-map [profile]
   (apply component/system-map
@@ -25,6 +26,7 @@
                   :like-handler (liker/map->Liker {})
                   :web (map->WebServer {})
                   :handler (new-handler :router :bidi)
+                  :auth (auth/map->Auth {})
                   :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile) [:middleware :secret]))]} #_{:middleware [wrap]})
                   :endpoint (new-endpoint endpoints/endpoint)]
                  [:site.top/index (controllers/map->SiteTopLevelController {})
@@ -41,6 +43,7 @@
    :scheduler [:like-handler :logging]
    :like-handler [:instagram]
    :handler [:endpoint :middleware]
+   :middleware [:auth]
    :site.data/post [:instagram]
    :site.data/start-stop [:scheduler :site.data/index]
    :site.data/index [:scheduler :like-handler]
