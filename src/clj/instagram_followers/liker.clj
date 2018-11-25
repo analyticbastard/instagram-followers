@@ -38,8 +38,8 @@
   component/Lifecycle
   (start [this]
     (as-> this $
-        (assoc $ :stats (atom init-stats))
-        (assoc $ :handler (make-like-handler $))))
+          (assoc $ :stats (atom init-stats))
+          (assoc $ :handler (make-like-handler $))))
 
   (stop [this]
     (-> (update this reset! :stats init-stats)

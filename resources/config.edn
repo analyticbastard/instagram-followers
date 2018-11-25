@@ -8,18 +8,18 @@
                                     :default #env IL_LOGIN}
                 :password #profile {:dev     #ref [:secrets :password]
                                     :default #env IL_PASSWORD}}
- :scheduler    {:interval #profile {:dev     10000
-                                    :default #or [#env IL_INTERVAL 3600000]}}
+ :scheduler    {:interval #profile {:dev     20000
+                                    :default #or [#safelong #env IL_INTERVAL 1800000]}}
  :like-handler {:max-users #or [#env IL_USERS 10]
                 :max-likes #or [#env IL_MAXLIKES 4]
                 :interval  #profile {:dev     1000
-                                     :default #or [#env IL_LIKEINTERVAL 10000]}
+                                     :default #or [#safelong #env IL_LIKEINTERVAL 10000]}
                 :max-posts #or [#env IL_MAXPOSTS 15]}
  :instagram    {:initial-cookie #or [#env IL_COOKIE
                                      #ref [:secrets :cookie]]
                 :initial-token  #or [#env IL_TOKEN
                                      #ref [:secrets :token]]
-                :npages         #profile {:dev     2
+                :npages         #profile {:dev     20
                                           :default #safelong #env IL_NPAGES}
                 :interval       #profile {:dev     0
                                           :default #or [#safelong #env IL_WAIT 100]}
