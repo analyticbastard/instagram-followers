@@ -26,4 +26,5 @@
     [:div.tile.is-parent
      [:article.tile.is-child.notification
       [:h1.title "Statistics"]
-      [:span [:span likes] " likes given so far"]]]]])
+      [:div [:span users] " users retrieved"]
+      [:div [:span likes] " likes given so far"]]]]])
