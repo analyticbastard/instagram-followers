@@ -6,11 +6,11 @@
                                   :default #env IL_SECRET}}
  :scheduler    {:interval #profile {:dev     10000
                                     :default #or [#env IL_INTERVAL 3600000]}}
- :like-handler {:max-users   #or [#env IL_USERS 10]
-                :max-likes   #or [#env IL_MAXLIKES 4]
-                :interval    #profile {:dev     1000
-                                       :default #or [#env IL_LIKEINTERVAL 10000]}
-                :post-newest #or [#env IL_MAXPOSTS 15]}
+ :like-handler {:max-users #or [#env IL_USERS 10]
+                :max-likes #or [#env IL_MAXLIKES 4]
+                :interval  #profile {:dev     1000
+                                     :default #or [#env IL_LIKEINTERVAL 10000]}
+                :max-posts #or [#env IL_MAXPOSTS 15]}
  :instagram    {:initial-cookie #or [#env IL_COOKIE
                                      #ref [:secrets :cookie]]
                 :initial-token  #or [#env IL_TOKEN

@@ -1,6 +1,6 @@
 (ns instagram-followers.views.data)
 
-(defn index [is-running?]
+(defn index [is-running? {:keys [users likes]}]
   [:div.tile.is-ancestor
    [:div.tile.is-vertical
     [:div.tile
@@ -26,4 +26,4 @@
     [:div.tile.is-parent
      [:article.tile.is-child.notification
       [:h1.title "Statistics"]
-      [:span [:span "10"] " likes given to " [:span "4"] " users"]]]]])
+      [:span [:span likes] " likes given so far"]]]]])

@@ -4,6 +4,7 @@
             [garden.core :refer [css]]
             [instagram-followers
              [instagram :as instagram]
+             [liker :as liker]
              [routes :as routes]
              [scheduler :as scheduler]
              [view :as view]]
@@ -35,10 +36,11 @@
 
 (defrecord SiteDataIndexController []
   component/Lifecycle
-  (start [{:keys [scheduler] :as component}]
+  (start [{:keys [scheduler like-handler] :as component}]
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
-                                     (utils/rum-ok (view/layout (data/index (scheduler/is-running? scheduler)))))
+                                     (utils/rum-ok (view/layout (data/index (scheduler/is-running? scheduler)
+                                                                            (liker/get-stats like-handler)))))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 

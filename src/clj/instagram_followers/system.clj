@@ -43,7 +43,7 @@
    :handler [:endpoint :middleware]
    :site.data/post [:instagram]
    :site.data/start-stop [:scheduler :site.data/index]
-   :site.data/index [:scheduler]
+   :site.data/index [:scheduler :like-handler]
    :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop]
    :web [:handler]})
 
