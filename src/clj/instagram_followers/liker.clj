@@ -17,7 +17,7 @@
     (try (if-let [users (seq (instagram/get-users instagram))]
            (let [num-users (rand-int max-users)
                  num-likes (rand-int max-likes)]
-             (swap! stats update :users (fnil + 0) (count users))
+             (swap! stats assoc :users (count users))
              (doseq [user (map #(% users) (repeat num-users rand-nth))
                      :let [profile (instagram/get-profile instagram user)
                            posts (get-posts-ids this profile)]]

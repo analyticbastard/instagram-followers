@@ -9,7 +9,8 @@
 (defn- wrap-errors [{:keys [job]} handler]
   (fn []
     (when-not (try (handler)
-                   (catch Exception _ false))
+                   (catch Exception e
+                     (log/info (str "Scheduler error " e))))
       (when (and job @job) (swap! job kill-and-clear!)))))
 
 (defn schedule! [{:keys [interval pool] :as component} handler]
