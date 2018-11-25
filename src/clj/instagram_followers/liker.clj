@@ -25,7 +25,8 @@
                  (Thread/sleep interval)
                  (instagram/like instagram post-id)
                  (swap! stats update :likes + num-likes)))
-             (log/info "Likes given in total" (-> stats deref :likes)))
+             (log/info "Likes given in total" (-> stats deref :likes))
+             true)
            (do
              (instagram/initialize! instagram)
              (!)))
