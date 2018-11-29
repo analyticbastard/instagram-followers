@@ -34,6 +34,8 @@
                   :site.data/index (controllers/map->SiteDataIndexController {})
                   :site.data/start-stop (controllers/map->SiteStartStopController {})
                   :site.data/post (controllers/map->SitePostController {})
+                  :site/main (controllers/map->SiteMainController {})
+                  :site/js (controllers/map->SiteJsController {})
                   :site/styles (controllers/map->SiteStylesController {})]
                  (when-not (= :dev profile)
                    [:nrepl (nrepl/map->NReplServer {:port 7888})]))))
@@ -47,7 +49,8 @@
    :site.data/post [:instagram]
    :site.data/start-stop [:scheduler :site.data/index]
    :site.data/index [:scheduler :like-handler]
-   :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop]
+   :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop
+              :site/main :site/js]
    :web [:handler]})
 
 (defn new-system [profile]

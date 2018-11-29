@@ -17,7 +17,9 @@
              [auth :as auth]
              [utils :as utils]]
             [ring.util.response :as res]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.java.io :as io]
+            [clojure.string :as str]))
 
 (defrecord SiteLoginController []
   component/Lifecycle
@@ -76,4 +78,22 @@
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req] (res/response (css (styles/styles))))))
+  (stop [component] (dissoc component :controller)))
+
+(defrecord SiteMainController []
+  component/Lifecycle
+  (start [component]
+    (assoc component :controller (fn [req]
+                                   (res/response (slurp (io/resource "public/js/main.js"))))))
+  (stop [component] (dissoc component :controller)))
+
+(defrecord SiteJsController []
+  component/Lifecycle
+  (start [component]
+    (assoc component :controller (fn [{params :params}]
+                                   (res/response (slurp (io/resource
+                                                          (first (str/split
+                                                                   (format "public/js/out/%s"
+                                                                           (str/join "/" (vals (select-keys params [:one :two :three :four :five]))))
+                                                                   #"\?"))))))))
   (stop [component] (dissoc component :controller)))
