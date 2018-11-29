@@ -1,5 +1,6 @@
 (ns instagram-followers.view
   (:require [rum.core :as rum]
+    [instagram-followers.views.data :as data]
     #?(:cljs [instagram-followers.flow :refer [dispatch]])))
 
 
@@ -17,7 +18,7 @@
              :defer true
              :integrity "sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ"
              :crossorigin "anonymous"}]
-   #_[:script {:src "/public/js/main.js"}]])
+   [:script {:src "/js/main.js"}]])
 
 (rum/defc header [{:keys [cart-item-num]}]
   [:nav.navbar.is-light {:role "navigation" :aria-label "main navigation"}
@@ -45,12 +46,21 @@
             :value     (or (:url state) "")
             :on-change #?(:clj nil :cljs #(dispatch :change-url (.. % -target -value)))}]])
 
-(rum/defc app < rum/reactive [state]
+(rum/defc data [state]
+  (data/index true {:users 0 :likes 1}))
+
+(rum/defc data-running-section [state]
+  (data/running-section true))
+
+#_(rum/defc app < rum/reactive [state]
   [:div
    (header {})
    [:.section
     [:.container
-     (form (rum/react state))]]])
+     (data (rum/react state))]]])
+
+(rum/defc running-section < rum/reactive [state]
+  (data-running-section (rum/react state)))
 
 (defn layout [& body]
   [:html

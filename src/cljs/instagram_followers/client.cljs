@@ -10,8 +10,8 @@
 (if goog.DEBUG
   (println "Start debug mode :)"))
 
-(when-let [app (js/document.getElementById "app")]
-  (rum/mount (view/app flow/state) app))
+(when-let [app (js/document.getElementById "running-section")]
+  (rum/mount (view/running-section flow/state) app))
 
 (defn on-js-reload []
   (swap! flow/state update-in [:__figwheel_counter] inc))
