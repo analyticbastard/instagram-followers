@@ -19,7 +19,7 @@
                 :all-builds [{:id "dev"
                               :figwheel true
                               :source-paths ["src/cljs" "src/cljc"]
-                              :compiler {:main "jp.blackawa.example.client"
+                              :compiler {:main "instagram-followers.client"
                                          :asset-path "/js/out"
                                          :output-to "resources/public/js/main.js"
                                          :output-dir "resources/public/js/out"
@@ -28,3 +28,6 @@
                                          :optimizations :none}}]}))))
 
 (set-init (fn [_] (dev-system)))
+
+;; bidi non loading on dev, force load
+(require '[bidi.bidi])
