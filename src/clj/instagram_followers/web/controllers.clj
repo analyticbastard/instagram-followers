@@ -1,6 +1,11 @@
 (ns instagram-followers.web.controllers
   (:require [cemerick.friend :as friend]
+            [clojure.core.async :as a :refer [go >! <! chan close!]]
+            [clojure.java.io :as io]
+            [clojure.string :as string]
+            [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
+            [ninjudd.eventual.server :refer [edn-events]]
             [garden.core :refer [css]]
             [instagram-followers
              [instagram :as instagram]
@@ -16,10 +21,7 @@
             [instagram-followers.web
              [auth :as auth]
              [utils :as utils]]
-            [ring.util.response :as res]
-            [clojure.string :as string]
-            [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [ring.util.response :as res]))
 
 (defrecord SiteLoginController []
   component/Lifecycle
@@ -92,8 +94,19 @@
   (start [component]
     (assoc component :controller (fn [{params :params}]
                                    (res/response (slurp (io/resource
-                                                          (first (str/split
+                                                          (first (string/split
                                                                    (format "public/js/out/%s"
-                                                                           (str/join "/" (vals (select-keys params [:one :two :three :four :five]))))
+                                                                           (string/join "/" (vals (select-keys params [:one :two :three :four :five]))))
                                                                    #"\?"))))))))
+  (stop [component] (dissoc component :controller)))
+
+(defrecord SiteSSEController []
+  component/Lifecycle
+  (start [component]
+    (assoc component :controller (fn [req]
+                                   (let [events (chan)]
+                                     (go (dotimes [i 5]
+                                           (>! events {:foo i}))
+                                         (close! events))
+                                     {:body events}))))
   (stop [component] (dissoc component :controller)))

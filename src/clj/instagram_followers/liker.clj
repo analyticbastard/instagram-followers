@@ -1,5 +1,6 @@
 (ns instagram-followers.liker
-  (:require [clojure.tools.logging :as log]
+  (:require [bonney.core :as bonney]
+            [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [instagram-followers.instagram :as instagram]))
 
@@ -23,7 +24,7 @@
                            num-likes (min (count posts) (inc (rand-int max-likes)))]]
                (doseq [post-id (map #(% posts) (repeat num-likes rand-nth))]
                  (Thread/sleep interval)
-                 (instagram/like instagram post-id)
+                 ;(instagram/like instagram post-id)
                  (swap! stats update :likes + num-likes)))
              (log/info "Likes given in total" (-> stats deref :likes))
              true)

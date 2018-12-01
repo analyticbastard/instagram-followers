@@ -10,6 +10,7 @@
     "/start-stop" :site.data/start-stop
     "/post"       :site.data/post
     "/styles.css" :site/styles
+    "/sse"        :controllers/sse
     "/js"         {"/main.js" :site/main
                    ["/out/" :one] :site/js
                    ["/out/" :one "/" :two] :site/js

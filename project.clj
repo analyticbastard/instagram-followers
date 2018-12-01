@@ -29,6 +29,7 @@
                  [com.cemerick/friend "0.2.3"]
                  [bidi "2.1.3"]
                  [yada "1.2.15"]
+                 [com.ninjudd/eventual "0.5.0"]
 
                  [rum "0.11.2"]
                  [garden "1.3.6"]

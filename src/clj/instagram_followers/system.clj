@@ -34,6 +34,7 @@
                   :site.data/index (controllers/map->SiteDataIndexController {})
                   :site.data/start-stop (controllers/map->SiteStartStopController {})
                   :site.data/post (controllers/map->SitePostController {})
+                  :controllers/sse (controllers/map->SiteSSEController {})
                   :site/main (controllers/map->SiteMainController {})
                   :site/js (controllers/map->SiteJsController {})
                   :site/styles (controllers/map->SiteStylesController {})]
@@ -50,7 +51,7 @@
    :site.data/start-stop [:scheduler :site.data/index]
    :site.data/index [:scheduler :like-handler]
    :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop
-              :site/main :site/js]
+              :site/main :site/js :controllers/sse]
    :web [:handler]})
 
 (defn new-system [profile]

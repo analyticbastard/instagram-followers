@@ -1,7 +1,8 @@
 {:secrets      #include "secrets.edn"
  :web          {:options {:port  #profile {:dev     8080
                                            :default #or [#safelong #env PORT 80]}
-                          :join? false}}
+                          :join? false
+                          :async? true}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
  :auth         {:username #profile {:dev     #ref [:secrets :login]

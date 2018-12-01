@@ -3,11 +3,14 @@
             [cemerick.friend
              [workflows :as workflows]
              [credentials :as creds]]
+            [clojure.core.async :as async]
+            [clojure.tools.logging :as log]
             [instagram-followers.view :as view]
             [instagram-followers.web
              [auth :as auth]
              [utils :as utils]]
             [muuntaja.middleware :refer [wrap-format]]
+            [ninjudd.eventual.server :refer [json-events]]
             [ring.middleware
              [content-type :refer [wrap-content-type]]
              [cookies :refer [wrap-cookies]]
@@ -16,9 +19,31 @@
              [nested-params :refer [wrap-nested-params]]
              [params :refer [wrap-params]]
              [session :refer [wrap-session]]]
+            [ring.core.protocols :refer [StreamableResponseBody]]
             [ring.middleware.session.cookie :refer [cookie-store]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults api-defaults]]
-            [ring.util.response :as res]))
+            [ring.util.response :as res])
+  (:import (clojure.core.async.impl.channels ManyToManyChannel)
+           (java.io IOException OutputStream)))
+
+(extend-type ManyToManyChannel
+  StreamableResponseBody
+  (write-body-to-stream [channel _ ^OutputStream output-stream]
+    (async/go
+      (try
+        (loop []
+          (when-let [msg (async/<! channel)]
+            (do
+              (if-not (= :flush msg)
+                (doto output-stream
+                  (.write ^bytes msg)
+                  (.flush))
+                (.flush output-stream))
+              (recur))))
+        (catch IOException e
+          (async/close! channel))
+        (catch Exception e
+          (log/error "Encountered error sending server event." e))))))
 
 (defn wrap-not-found [handler]
   (fn [req]
@@ -36,14 +61,30 @@
      :credential-fn        #(creds/bcrypt-credential-fn @auth/users %)
      :workflows            [(workflows/interactive-form)]}))
 
+(defn wrap-server-sent [handler]
+  (fn [request]
+    (let [{:keys [body] :as response} (handler request)]
+      (if (= ManyToManyChannel (class body))
+        (json-events body)
+        response))))
+
 (defn wrap [secret handler]
-  (fn [req]
-    (let [wrapped-handler (-> handler
-                              wrap-authenticate
-                              wrap-params
-                              wrap-keyword-params
-                              wrap-nested-params
-                              wrap-multipart-params
-                              wrap-cookies
-                              (wrap-session {:store (cookie-store {:key secret})}))]
-      (wrapped-handler req))))
+  (fn
+    ([req]
+     (let [wrapped-handler (-> handler
+                               wrap-authenticate
+                               wrap-params
+                               wrap-keyword-params
+                               wrap-nested-params
+                               wrap-multipart-params
+                               wrap-cookies
+                               (wrap-session {:store (cookie-store {:key secret})})
+                               wrap-server-sent)]
+       (wrapped-handler req)))
+    ([req resp raise]
+     (try
+       (resp ((-> handler
+                  wrap-server-sent) req))
+       (catch Exception e
+         (println e)
+         (raise e))))))
