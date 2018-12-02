@@ -103,10 +103,12 @@
 (defrecord SiteSSEController []
   component/Lifecycle
   (start [component]
-    (assoc component :controller (fn [req]
-                                   (let [events (chan)]
-                                     (go (dotimes [i 5]
-                                           (>! events {:foo i}))
-                                         (close! events))
-                                     {:body events}))))
+    (assoc component :controller (cemerick.friend/wrap-authorize
+                                   (fn [req]
+                                     (let [events (chan)]
+                                       (go (dotimes [i 5]
+                                             (>! events {:foo i}))
+                                           (close! events))
+                                       {:body events}))
+                                   #{::auth/user})))
   (stop [component] (dissoc component :controller)))

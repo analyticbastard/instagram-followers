@@ -32,14 +32,15 @@
     (async/go
       (try
         (loop []
-          (when-let [msg (async/<! channel)]
+          (if-let [msg (async/<! channel)]
             (do
               (if-not (= :flush msg)
                 (doto output-stream
                   (.write ^bytes msg)
                   (.flush))
                 (.flush output-stream))
-              (recur))))
+              (recur))
+            (.close output-stream)))
         (catch IOException e
           (async/close! channel))
         (catch Exception e
@@ -68,23 +69,26 @@
         (json-events body)
         response))))
 
+(defn wrap-handler [handler secret]
+  (-> handler
+      wrap-authenticate
+      wrap-params
+      wrap-keyword-params
+      wrap-nested-params
+      wrap-multipart-params
+      wrap-cookies
+      (wrap-session {:store (cookie-store {:key secret})})))
+
 (defn wrap [secret handler]
   (fn
     ([req]
-     (let [wrapped-handler (-> handler
-                               wrap-authenticate
-                               wrap-params
-                               wrap-keyword-params
-                               wrap-nested-params
-                               wrap-multipart-params
-                               wrap-cookies
-                               (wrap-session {:store (cookie-store {:key secret})})
-                               wrap-server-sent)]
-       (wrapped-handler req)))
+     ((wrap-handler handler secret) req))
     ([req resp raise]
      (try
-       (resp ((-> handler
-                  wrap-server-sent) req))
+       (let [wrapped-handler (-> handler
+                                 wrap-server-sent
+                                 (wrap-handler secret))]
+         (resp (wrapped-handler req)))
        (catch Exception e
          (println e)
          (raise e))))))
