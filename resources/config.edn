@@ -1,7 +1,7 @@
 {:secrets      #include "secrets.edn"
- :web          {:options {:port  #profile {:dev     8080
-                                           :default #or [#safelong #env PORT 80]}
-                          :join? false
+ :web          {:options {:port   #profile {:dev     8080
+                                            :default #or [#safelong #env PORT 80]}
+                          :join?  false
                           :async? true}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
                                   :default #env IL_SECRET}}
@@ -11,8 +11,10 @@
                                     :default #env IL_PASSWORD}}
  :scheduler    {:interval #profile {:dev     20000
                                     :default #or [#safelong #env IL_INTERVAL 1800000]}}
- :like-handler {:max-users #or [#safelong #env IL_USERS 10]
-                :max-likes #or [#safelong #env IL_MAXLIKES 4]
+ :like-handler {:max-users #profile {:dev 2
+                                     #or [#safelong #env IL_USERS 10]}
+                :max-likes #profile {:dev 2
+                                     #or [#safelong #env IL_MAXLIKES 4]}
                 :interval  #profile {:dev     500
                                      :default #or [#safelong #env IL_LIKEINTERVAL 10000]}
                 :max-posts #or [#env IL_MAXPOSTS 15]}
