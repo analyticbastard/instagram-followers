@@ -13,7 +13,7 @@
                                     :default #or [#safelong #env IL_INTERVAL 1800000]}}
  :like-handler {:max-users #or [#safelong #env IL_USERS 10]
                 :max-likes #or [#safelong #env IL_MAXLIKES 4]
-                :interval  #profile {:dev     1000
+                :interval  #profile {:dev     500
                                      :default #or [#safelong #env IL_LIKEINTERVAL 10000]}
                 :max-posts #or [#env IL_MAXPOSTS 15]}
  :instagram    {:initial-cookie #or [#env IL_COOKIE
