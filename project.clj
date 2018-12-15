@@ -51,4 +51,12 @@
                                   [figwheel-sidecar "0.5.17"]]}}
   :repl-options {:timeout 250000
                  :init-ns user}
-  :javac-options ["--add-modules java.xml.bind"])
+  :javac-options ["--add-modules java.xml.bind"]
+  :cljsbuild {:builds [{:source-paths ["src/cljs" "src/cljc"]
+                        :compiler {:main "front.web.client"
+                                   :asset-path "/js/out"
+                                   :closure-defines {"goog.DEBUG" false}
+                                   :verbose true
+                                   :output-to "resources/public/js/main.js"
+                                   :optimizations :advanced
+                                   :pretty-print false}}]})
