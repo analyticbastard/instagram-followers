@@ -24,7 +24,7 @@
         [:textarea {:name "two"}]
         [:div.buttons.is-right
          [:button.button.is-medium.is-success {:type "submit"} "Submit"]]]]]
-     [:div.tile.is-parent#running-section
+     [:div.tile.is-parent#running-section {:data-is-running is-running?}
       (running-section is-running?)]]
     [:div.tile.is-parent
      [:article.tile.is-child.notification

@@ -47,10 +47,13 @@
             :on-change #?(:clj nil :cljs #(dispatch :change-url (.. % -target -value)))}]])
 
 (rum/defc data [state]
-  (data/index true {:users 0 :likes 1}))
+  (data/index false {:users 0 :likes 0}))
 
-(rum/defc data-running-section [state]
-  (data/running-section true))
+(rum/defcs data-running-section
+  < rum.core/static rum.core/reactive
+  [state label]
+  (println "QQQQ" state)
+  (data/running-section false))
 
 #_(rum/defc app < rum/reactive [state]
   [:div
