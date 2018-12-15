@@ -11,7 +11,7 @@
   (println "Start debug mode :)"))
 
 (when-let [app (js/document.getElementById "running-section")]
-  (rum/mount (view/running-section flow/state) app))
+  (rum/hydrate (view/running-section flow/state) app))
 
 (defn on-js-reload []
   (swap! flow/state update-in [:__figwheel_counter] inc))
