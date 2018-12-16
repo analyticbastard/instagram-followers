@@ -43,7 +43,7 @@
   (start [{:keys [scheduler like-handler] :as component}]
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
-                                     (utils/rum-ok (view/layout (data/index (scheduler/is-running? scheduler)
+                                     (utils/rum-ok (view/layout (data/index (scheduler/is-running scheduler)
                                                                             (liker/get-stats like-handler)))))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
@@ -52,7 +52,7 @@
   component/Lifecycle
   (start [{:keys [scheduler] :as component}]
     (assoc component :controller (fn [req]
-                                   (if (scheduler/is-running? scheduler)
+                                   (if (deref (scheduler/is-running scheduler))
                                      (.disable scheduler)
                                      (.enable scheduler))
                                    (res/redirect (ffirst (filter (fn [[k v]] (= v :site.data/index))
