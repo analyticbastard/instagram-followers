@@ -10,7 +10,7 @@
              [auth :as auth]
              [utils :as utils]]
             [muuntaja.middleware :refer [wrap-format]]
-            [ninjudd.eventual.server :refer [json-events]]
+            [ninjudd.eventual.server :as eventual]
             [ring.middleware
              [content-type :refer [wrap-content-type]]
              [cookies :refer [wrap-cookies]]
@@ -66,7 +66,7 @@
   (fn [request]
     (let [{:keys [body] :as response} (handler request)]
       (if (= ManyToManyChannel (class body))
-        (json-events body)
+        (eventual/edn-events body)
         response))))
 
 (defn wrap-handler [handler secret]

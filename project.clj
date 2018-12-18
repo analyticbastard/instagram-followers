@@ -34,6 +34,7 @@
                  [rum "0.11.2"]
                  [garden "1.3.6"]
                  [venantius/accountant "0.2.4"]
+                 [cljs-http "0.1.45"]
 
                  ;; Logging
                  [org.clojure/tools.logging "0.2.6"]

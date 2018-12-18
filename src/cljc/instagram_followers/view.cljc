@@ -49,10 +49,12 @@
 (rum/defc data [state]
   (data/index (atom false) {:users 0 :likes 0}))
 
+(def status (atom false))
+
 (rum/defcs data-running-section
   < rum.core/static rum.core/reactive
   [state label]
-  (data/running-section (atom false)))
+  (data/running-section status))
 
 #_(rum/defc app < rum/reactive [state]
   [:div

@@ -1,18 +1,26 @@
-(ns instagram-followers.views.data)
+(ns instagram-followers.views.data
+  #?(:cljs (:require
+             [cljs-http.client :as http]
+             [rum.core :as rum])))
+
+(defn start-stop! [_]
+  #?(:cljs (http/post "/start-stop")))
+
+(def dref
+  #?(:clj  deref
+     :cljs rum/react))
 
 (defn running-section [*is-running]
-  (let [is-running? @*is-running]
-    (println is-running?)
+  (let [is-running? (dref *is-running)]
     [:article.tile.is-child.notification
      [:h1.title "Status"]
      [:div [:span
             (str "Application " (if is-running? "running" "stopped"))]]
-     [:form {:action "/start-stop"}
-      [:div.buttons.is-centered
-       [:p.control
-        [:button {:type "submit" :class (str "button is-medium " (if is-running? "is-danger" "is-success"))}
-         [:span.icon.is-medium [:i {:class (str "fas " (if is-running? "fa-pause" "fa-play"))}]]
-         [:span (if is-running? "Stop" "Start")]]]]]]))
+     [:div.buttons.is-centered
+      [:p.control
+       [:button {:on-click start-stop! :class (str "button is-medium " (if is-running? "is-danger" "is-success"))}
+        [:span.icon.is-medium [:i {:class (str "fas " (if is-running? "fa-pause" "fa-play"))}]]
+        [:span (if is-running? "Stop" "Start")]]]]]))
 
 (defn index [*is-running {:keys [users likes]}]
   (let [is-running? @*is-running]

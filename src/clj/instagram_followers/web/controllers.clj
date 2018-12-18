@@ -1,6 +1,6 @@
 (ns instagram-followers.web.controllers
   (:require [cemerick.friend :as friend]
-            [clojure.core.async :as a :refer [go >! <! chan close!]]
+            [clojure.core.async :as a :refer [go >! >!! <! chan close!]]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
@@ -43,20 +43,21 @@
   (start [{:keys [scheduler like-handler] :as component}]
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
-                                     (utils/rum-ok (view/layout (data/index (scheduler/is-running scheduler)
+                                     (utils/rum-ok (view/layout (data/index (atom (boolean (some-> (scheduler/job scheduler) deref)))
                                                                             (liker/get-stats like-handler)))))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SiteStartStopController []
   component/Lifecycle
-  (start [{:keys [scheduler] :as component}]
+  (start [{scheduler :scheduler sse :controllers/sse :as component}]
     (assoc component :controller (fn [req]
-                                   (if (deref (scheduler/is-running scheduler))
-                                     (.disable scheduler)
-                                     (.enable scheduler))
-                                   (res/redirect (ffirst (filter (fn [[k v]] (= v :site.data/index))
-                                                                 (second routes/routes)))))))
+                                   (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))]
+                                     (if is-running?
+                                       (.disable scheduler)
+                                       (.enable scheduler))
+                                     (go (>! (:chan sse) {:is-running? is-running?})))
+                                   (utils/rum-ok {}))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SitePostController []
@@ -102,13 +103,13 @@
 
 (defrecord SiteSSEController []
   component/Lifecycle
-  (start [component]
-    (assoc component :controller (cemerick.friend/wrap-authorize
-                                   (fn [req]
-                                     (let [events (chan)]
-                                       (go (dotimes [i 5]
-                                             (>! events {:foo i}))
-                                           (close! events))
-                                       {:body events}))
-                                   #{::auth/user})))
+  (start [{:keys [scheduler] :as component}]
+    (let [events (chan)]
+      (assoc component
+        :chan events
+        :controller (cemerick.friend/wrap-authorize
+                      (fn [req]
+                        (go (>! events {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
+                        {:body events})
+                      #{::auth/user}))))
   (stop [component] (dissoc component :controller)))

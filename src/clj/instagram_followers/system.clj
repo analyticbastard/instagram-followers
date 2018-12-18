@@ -48,7 +48,8 @@
    :handler [:endpoint :middleware]
    :middleware [:auth]
    :site.data/post [:instagram]
-   :site.data/start-stop [:scheduler :site.data/index]
+   :controllers/sse [:scheduler]
+   :site.data/start-stop [:scheduler :site.data/index :controllers/sse]
    :site.data/index [:scheduler :like-handler]
    :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop
               :site/main :site/js :controllers/sse]

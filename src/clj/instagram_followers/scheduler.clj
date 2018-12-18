@@ -46,5 +46,5 @@
     (cond-> this
             @job (update :job swap! kill-and-clear!))))
 
-(defn is-running [component]
+(defn job [component]
   (:job component))
