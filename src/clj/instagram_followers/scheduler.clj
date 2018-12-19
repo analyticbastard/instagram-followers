@@ -29,8 +29,7 @@
     (cond-> this
             (or (not job) (not @job))
             (assoc :pool (bonney/create-pool :threads 1 :desc "Cron")
-                   :job (atom nil)
-                   :initialized (atom false))))
+                   :job (atom nil))))
 
   (stop [{:keys [job] :as this}]
     (cond-> this

@@ -9,7 +9,6 @@
 (rum/defc running-section
   < rum.core/static rum.core/reactive
   [{:keys [is-running?]}]
-  (println is-running?)
   [:article.tile.is-child.notification
    [:h1.title "Status"]
    [:div [:span (str "Application " (if is-running? "running" "stopped"))]]

@@ -1,6 +1,6 @@
 (ns instagram-followers.web.controllers
   (:require [cemerick.friend :as friend]
-            [clojure.core.async :as a :refer [go >! >!! <! chan close! timeout]]
+            [clojure.core.async :as a :refer [go go-loop >! >!! <! chan close! timeout alts!]]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
@@ -107,13 +107,27 @@
 
 (defrecord SiteSSEController []
   component/Lifecycle
-  (start [{:keys [scheduler] :as component}]
+  (start [component ]
     (let [events (chan)]
       (assoc component
         :chan events
         :controller (cemerick.friend/wrap-authorize
-                      (fn [req]
-                        (go (>! events {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
-                        {:body events})
+                      (fn [_] {:body events})
                       #{::auth/user}))))
   (stop [component] (dissoc component :controller)))
+
+(defrecord SitePollerController []
+  component/Lifecycle
+  (start [{scheduler :scheduler like-handler :like-handler sse :controllers/sse :as component}]
+    (let [ch (chan)
+          events (:chan sse)]
+      (go-loop []
+               (>! events (merge (liker/get-stats like-handler)
+                                 {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
+               (let [[_ p] (alts! [ch (timeout 1000)])]
+                 (if-not (= p ch)
+                   (recur))))
+      (assoc component :chan ch)))
+  (stop [component]
+    (close! (:chan component))
+    (dissoc component :chan)))

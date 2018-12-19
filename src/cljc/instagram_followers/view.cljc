@@ -56,6 +56,14 @@
 (rum/defc running-section < rum/reactive [state]
   (data-running-section (rum/react state)))
 
+(rum/defcs data-page
+  < rum.core/static rum.core/reactive
+  [state label]
+  (data/index (rum/react status)))
+
+(rum/defc page < rum/reactive [state]
+  (data-page (rum/react state)))
+
 (rum/defc layout
   < rum.core/static
   [& body]
@@ -65,6 +73,6 @@
     [:div#app
      (header {})
      [:section.section
-      [:div.container
+      [:div.container#page
        body]]]
     (javascripts)]])

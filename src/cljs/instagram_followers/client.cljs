@@ -19,8 +19,8 @@
                                   (let [data (cljs.reader/read-string (.-data e))]
                                     (swap! view/status merge data))))
 
-(when-let [app (js/document.getElementById "running-section")]
-  (rum/hydrate (view/running-section flow/state) app))
+(when-let [app (js/document.getElementById "page")]
+  (rum/hydrate (view/page flow/state) app))
 
 (defn on-js-reload []
   (swap! flow/state update-in [:__figwheel_counter] inc))
