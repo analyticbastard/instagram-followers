@@ -6,7 +6,7 @@
   (assoc-in resp [:headers "Content-Type"] "text/html;charset=utf-8"))
 
 (defn rum-ok [coll]
-  (-> (res/response (rum/render-static-markup coll))
+  (-> (res/response (rum/render-html coll))
       html-response))
 
 (defn rum-not-found [coll]

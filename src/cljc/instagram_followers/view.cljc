@@ -46,27 +46,19 @@
             :value     (or (:url state) "")
             :on-change #?(:clj nil :cljs #(dispatch :change-url (.. % -target -value)))}]])
 
-(rum/defc data [state]
-  (data/index (atom false) {:users 0 :likes 0}))
-
-(def status (atom false))
+(def status (atom {}))
 
 (rum/defcs data-running-section
   < rum.core/static rum.core/reactive
   [state label]
-  (data/running-section status))
-
-#_(rum/defc app < rum/reactive [state]
-  [:div
-   (header {})
-   [:.section
-    [:.container
-     (data (rum/react state))]]])
+  (data/running-section (rum/react status)))
 
 (rum/defc running-section < rum/reactive [state]
   (data-running-section (rum/react state)))
 
-(defn layout [& body]
+(rum/defc layout
+  < rum.core/static
+  [& body]
   [:html
    (html-headers)
    [:body

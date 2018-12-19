@@ -1,6 +1,6 @@
 (ns instagram-followers.web.controllers
   (:require [cemerick.friend :as friend]
-            [clojure.core.async :as a :refer [go >! >!! <! chan close!]]
+            [clojure.core.async :as a :refer [go >! >!! <! chan close! timeout]]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
@@ -21,7 +21,8 @@
             [instagram-followers.web
              [auth :as auth]
              [utils :as utils]]
-            [ring.util.response :as res]))
+            [ring.util.response :as res]
+            [rum.core :as rum]))
 
 (defrecord SiteLoginController []
   component/Lifecycle
@@ -35,7 +36,7 @@
   (start [component]
     (assoc component :controller (fn [req]
                                    (res/redirect (ffirst (filter (fn [[k v]] (= v :site.data/index))
-                                                                   (second routes/routes)))))))
+                                                                 (second routes/routes)))))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SiteDataIndexController []
@@ -43,8 +44,12 @@
   (start [{:keys [scheduler like-handler] :as component}]
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
-                                     (utils/rum-ok (view/layout (data/index (atom (boolean (some-> (scheduler/job scheduler) deref)))
-                                                                            (liker/get-stats like-handler)))))
+                                     (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))]
+                                       (-> (merge (liker/get-stats like-handler)
+                                                  {:is-running? is-running?})
+                                           data/index
+                                           view/layout
+                                           utils/rum-ok)))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 
@@ -52,11 +57,10 @@
   component/Lifecycle
   (start [{scheduler :scheduler sse :controllers/sse :as component}]
     (assoc component :controller (fn [req]
-                                   (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))]
-                                     (if is-running?
-                                       (.disable scheduler)
-                                       (.enable scheduler))
-                                     (go (>! (:chan sse) {:is-running? is-running?})))
+                                   (if (boolean (some-> (scheduler/job scheduler) deref))
+                                     (.disable scheduler)
+                                     (.enable scheduler))
+                                   (go (>! (:chan sse) {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
                                    (utils/rum-ok {}))))
   (stop [component] (dissoc component :controller)))
 

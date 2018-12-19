@@ -16,9 +16,8 @@
 
 ;;just print them out could swap into an atom and visualize with html component
 (.addEventListener es "message" (fn [e]
-                                  (let [data (cljs.reader/read-string (.-data e))
-                                        is-running? (:is-running? data)]
-                                    (reset! view/status is-running?))))
+                                  (let [data (cljs.reader/read-string (.-data e))]
+                                    (swap! view/status merge data))))
 
 (when-let [app (js/document.getElementById "running-section")]
   (rum/hydrate (view/running-section flow/state) app))
