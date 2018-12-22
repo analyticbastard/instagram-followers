@@ -28,33 +28,7 @@
     [:div.navbar-burger
      [:span] [:span] [:span]]]])
 
-(rum/defc current-view < rum/reactive [state]
-  [:div
-   [:p "View:" (:view state)]
-   [:div {:on-click #?(:cljs #(dispatch :sample 1)
-                       :clj nil)
-          } "Sample:" (rum/react (:sample state))]])
-
-(rum/defc form [state]
-  [:.app
-   [:h1 (str "Hello, " (:name state))]
-   [:input {:type      "input"
-            :value     (or (:name state) "")
-            :on-change #?(:clj nil :cljs #(dispatch :change-name (.. % -target -value)))}]
-   [:h1 (str "View keyword: " (:view-kw state))]
-   [:input {:type      "input"
-            :value     (or (:url state) "")
-            :on-change #?(:clj nil :cljs #(dispatch :change-url (.. % -target -value)))}]])
-
 (def status (atom {}))
-
-(rum/defcs data-running-section
-  < rum.core/static rum.core/reactive
-  [state label]
-  (data/running-section (rum/react status)))
-
-(rum/defc running-section < rum/reactive [state]
-  (data-running-section (rum/react state)))
 
 (rum/defcs data-page
   < rum.core/static rum.core/reactive
