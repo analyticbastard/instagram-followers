@@ -28,7 +28,7 @@
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req]
-                                   (utils/rum-ok (view/layout (top/index))))))
+                                   (utils/rum-ok (view/layout false (top/index))))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SiteTopLevelController []
@@ -45,11 +45,11 @@
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
                                      (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))]
-                                       (-> (merge (liker/get-stats like-handler)
-                                                  {:is-running? is-running?})
-                                           data/index
-                                           view/layout
-                                           utils/rum-ok)))
+                                       (->> (merge (liker/get-stats like-handler)
+                                                   {:is-running? is-running?})
+                                            data/index
+                                            (view/layout true)
+                                            utils/rum-ok)))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 
@@ -76,8 +76,8 @@
                                          (do
                                            (instagram/update-csrftoken! instagram csrftoken)
                                            (instagram/update-cookie! instagram cookie)
-                                           (utils/rum-ok (view/layout (results/ok))))
-                                         (utils/rum-ok (view/layout (results/fail))))))
+                                           (utils/rum-ok (view/layout true (results/ok))))
+                                         (utils/rum-ok (view/layout true (results/fail))))))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 

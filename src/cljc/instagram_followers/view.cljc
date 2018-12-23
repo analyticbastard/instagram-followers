@@ -1,6 +1,6 @@
 (ns instagram-followers.view
   (:require [rum.core :as rum]
-    [instagram-followers.views.data :as data]
+            [instagram-followers.views.data :as data]
     #?(:cljs [instagram-followers.flow :refer [dispatch]])))
 
 
@@ -40,13 +40,14 @@
 
 (rum/defc layout
   < rum.core/static
-  [& body]
+  [load-scripts? & body]
   [:html
    (html-headers)
    [:body
-    [:div#app
-     (header {})
-     [:section.section
-      [:div.container#page
-       body]]]
-    (javascripts)]])
+    (concat [[:div#app
+              (header {})
+              [:section.section
+               [:div.container#page
+                body]]]]
+            (when load-scripts?
+              [(javascripts)]))]])

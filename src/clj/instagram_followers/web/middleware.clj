@@ -58,7 +58,7 @@
     {:allow-anon?          true
      :login-uri            "/login"
      :default-landing-uri  "/data"
-     :unauthorized-handler #(utils/rum-not-found (view/layout [:h2 "You do not have sufficient privileges to access " (:uri %)]))
+     :unauthorized-handler #(utils/rum-not-found (view/layout false [:h2 "You do not have sufficient privileges to access " (:uri %)]))
      :credential-fn        #(creds/bcrypt-credential-fn @auth/users %)
      :workflows            [(workflows/interactive-form)]}))
 
