@@ -54,7 +54,7 @@
                  :init-ns user}
   :javac-options ["--add-modules java.xml.bind"]
   :cljsbuild {:builds [{:source-paths ["src/cljs" "src/cljc"]
-                        :compiler {:main "front.web.client"
+                        :compiler {:main "instagram_followers.client"
                                    :asset-path "/js/out"
                                    :closure-defines {"goog.DEBUG" false}
                                    :verbose true
