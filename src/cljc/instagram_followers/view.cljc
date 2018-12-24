@@ -31,9 +31,9 @@
 
 (def status (atom {}))
 
-(rum/defcs data-page
+(rum/defc data-page
   < rum.core/static rum.core/reactive
-  [state label]
+  [state]
   (data/index (rum/react status)))
 
 (rum/defc page < rum/reactive [state]
