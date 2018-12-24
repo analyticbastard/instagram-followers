@@ -11,11 +11,5 @@
     "/post"       :controller/post
     "/styles.css" :controller/styles
     "/sse"        :controller/sse
-    "/js"         {"/main.js"                                                      :controller/main
-                   ["/out/" :one]                                                  :controller/js
-                   ["/out/" :one "/" :two]                                         :controller/js
-                   ["/out/" :one "/" :two "/" :three]                              :controller/js
-                   ["/out/" :one "/" :two "/" :three "/" :four]                    :controller/js
-                   ["/out/" :one "/" :two "/" :three "/" :four "/" :five]          :controller/js
-                   ["/out/" :one "/" :two "/" :three "/" :four "/" :five "/" :six] :controller/js
-                   }}])
+    "/js"         [["/main.js" :controller/main]
+                   [true :controller/js]]}])

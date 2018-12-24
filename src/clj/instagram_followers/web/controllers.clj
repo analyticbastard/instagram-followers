@@ -97,12 +97,12 @@
 (defrecord SiteJsController []
   component/Lifecycle
   (start [component]
-    (assoc component :controller (fn [{params :params}]
-                                   (res/response (slurp (io/resource
-                                                          (first (string/split
-                                                                   (format "public/js/out/%s"
-                                                                           (string/join "/" (vals (select-keys params [:one :two :three :four :five]))))
-                                                                   #"\?"))))))))
+    (assoc component :controller (fn [request]
+                                   (some->> (:uri request)
+                                            (format "public%s")
+                                            io/resource
+                                            slurp
+                                            res/response))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SiteSSEController []
