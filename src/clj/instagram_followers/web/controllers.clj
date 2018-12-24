@@ -35,7 +35,7 @@
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req]
-                                   (res/redirect (ffirst (filter (fn [[k v]] (= v :site.data/index))
+                                   (res/redirect (ffirst (filter (fn [[k v]] (= v :controller/index))
                                                                  (second routes/routes)))))))
   (stop [component] (dissoc component :controller)))
 
@@ -55,7 +55,7 @@
 
 (defrecord SiteStartStopController []
   component/Lifecycle
-  (start [{scheduler :scheduler sse :controllers/sse :as component}]
+  (start [{scheduler :scheduler sse :controller/sse :as component}]
     (assoc component :controller (fn [req]
                                    (if (boolean (some-> (scheduler/job scheduler) deref))
                                      (.disable scheduler)
@@ -118,15 +118,15 @@
 
 (defrecord SitePollerController []
   component/Lifecycle
-  (start [{scheduler :scheduler like-handler :like-handler sse :controllers/sse :as component}]
+  (start [{scheduler :scheduler like-handler :like-handler sse :controller/sse :as component}]
     (let [ch (chan)
           events (:chan sse)]
       (go-loop []
-               (>! events (merge (liker/get-stats like-handler)
-                                 {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
-               (let [[_ p] (alts! [ch (timeout 1000)])]
-                 (if-not (= p ch)
-                   (recur))))
+        (>! events (merge (liker/get-stats like-handler)
+                          {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
+        (let [[_ p] (alts! [ch (timeout 1000)])]
+          (if-not (= p ch)
+            (recur))))
       (assoc component :chan ch)))
   (stop [component]
     (close! (:chan component))

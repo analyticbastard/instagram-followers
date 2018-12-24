@@ -29,32 +29,32 @@
                   :auth (auth/map->Auth {})
                   :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile) [:middleware :secret]))]} #_{:middleware [wrap]})
                   :endpoint (new-endpoint endpoints/endpoint)]
-                 [:site.top/index (controllers/map->SiteTopLevelController {})
-                  :site.login/get (controllers/map->SiteLoginController {})
-                  :site.data/index (controllers/map->SiteDataIndexController {})
-                  :site.data/start-stop (controllers/map->SiteStartStopController {})
-                  :site.data/post (controllers/map->SitePostController {})
-                  :controllers/sse (controllers/map->SiteSSEController {})
+                 [:controller/index (controllers/map->SiteTopLevelController {})
+                  :controller/get (controllers/map->SiteLoginController {})
+                  :controller/index (controllers/map->SiteDataIndexController {})
+                  :controller/start-stop (controllers/map->SiteStartStopController {})
+                  :controller/post (controllers/map->SitePostController {})
+                  :controller/sse (controllers/map->SiteSSEController {})
                   :poller (controllers/map->SitePollerController {})
-                  :site/main (controllers/map->SiteMainController {})
-                  :site/js (controllers/map->SiteJsController {})
-                  :site/styles (controllers/map->SiteStylesController {})]
+                  :controller/main (controllers/map->SiteMainController {})
+                  :controller/js (controllers/map->SiteJsController {})
+                  :controller/styles (controllers/map->SiteStylesController {})]
                  (when-not (= :dev profile)
                    [:nrepl (nrepl/map->NReplServer {:port 7888})]))))
 
 (defn new-dependency-map [_]
-  {:instagram [:logging]
-   :scheduler [:like-handler :logging]
-   :like-handler [:instagram]
-   :handler [:endpoint :middleware]
-   :middleware [:auth]
-   :site.data/post [:instagram]
-   :site.data/start-stop [:scheduler :site.data/index :controllers/sse]
-   :site.data/index [:scheduler :like-handler]
-   :poller [:scheduler :like-handler :controllers/sse]
-   :endpoint [:site.top/index :site.login/get :site.data/index :site/styles :site.data/post :site.data/start-stop
-              :site/main :site/js :controllers/sse]
-   :web [:handler]})
+  {:instagram             [:logging]
+   :scheduler             [:like-handler :logging]
+   :like-handler          [:instagram]
+   :handler               [:endpoint :middleware]
+   :middleware            [:auth]
+   :controller/post       [:instagram]
+   :controller/start-stop [:scheduler :controller/index :controller/sse]
+   :controller/index      [:scheduler :like-handler]
+   :poller                [:scheduler :like-handler :controller/sse]
+   :endpoint              [:controller/index :controller/get :controller/index :controller/styles :controller/post :controller/start-stop
+              :controller/main :controller/js :controller/sse]
+   :web                   [:handler]})
 
 (defn new-system [profile]
   (-> (new-system-map profile)

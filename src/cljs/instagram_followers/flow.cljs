@@ -22,7 +22,7 @@
 
 (defmethod transform :change-current-view
   [state {k :handler}]
-  (let [view-map {:site.top/index top/index}]
+  (let [view-map {:controller/index top/index}]
     (assoc state :current-view (or (k view-map) top/index))))
 
 (defmethod transform :change-name
