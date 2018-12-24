@@ -45,10 +45,10 @@
   [:html
    (html-headers load-scripts?)
    [:body
-    (concat [[:div#app
-              (header {})
-              [:section.section
-               [:div.container#page
-                body]]]]
-            (when load-scripts?
-              [(javascripts)]))]])
+    [:div#app
+     (header {})
+     [:section.section
+      [:div.container#page
+       body]]]
+    (when load-scripts?
+      (javascripts))]])
