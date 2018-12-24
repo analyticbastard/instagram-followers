@@ -4,15 +4,16 @@
     #?(:cljs [instagram-followers.flow :refer [dispatch]])))
 
 
-(defn html-headers []
+(defn html-headers [load-scripts?]
   [:head
    [:title "Instagram Love"]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
    [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]
-   [:link {:rel         "stylesheet"
-           :href        "https://use.fontawesome.com/releases/v5.6.3/css/all.css"
-           :integrity   "sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
-           :crossorigin "anonymous"}]
+   (when load-scripts?
+     [:link {:rel         "stylesheet"
+             :href        "https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+             :integrity   "sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+             :crossorigin "anonymous"}])
    [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css"}]
    [:link {:rel "stylesheet" :href "styles.css"}]])
 
@@ -42,7 +43,7 @@
   < rum.core/static
   [load-scripts? & body]
   [:html
-   (html-headers)
+   (html-headers load-scripts?)
    [:body
     (concat [[:div#app
               (header {})
