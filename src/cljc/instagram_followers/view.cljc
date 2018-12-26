@@ -29,15 +29,18 @@
     [:div.navbar-burger
      [:span] [:span] [:span]]]])
 
-(def status (atom {}))
+(def init-status {})
+
+(def status (atom init-status))
 
 (rum/defc data-page
   < rum.core/static rum.core/reactive
   [state]
-  (data/index (rum/react status)))
+  (let [state (rum/react state)]
+    (data/index (:status state))))
 
 (rum/defc page < rum/reactive [state]
-  (data-page (rum/react state)))
+  (data-page state))
 
 (rum/defc layout
   < rum.core/static

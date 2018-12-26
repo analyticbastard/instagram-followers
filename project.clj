@@ -32,6 +32,7 @@
                  [com.ninjudd/eventual "0.5.0"]
 
                  [rum "0.11.2"]
+                 [org.roman01la/citrus "3.2.1"]
                  [garden "1.3.6"]
                  [venantius/accountant "0.2.4"]
                  [cljs-http "0.1.45"]

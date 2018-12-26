@@ -7,7 +7,7 @@
   #?(:cljs (http/post "/start-stop")))
 
 (rum/defc running-section
-  < rum.core/static rum.core/reactive
+  < rum.core/static
   [{:keys [is-running?]}]
   [:article.tile.is-child.notification
    [:h1.title "Status"]
@@ -19,7 +19,7 @@
       [:span (if is-running? "Stop" "Start")]]]]])
 
 (rum/defc index
-  < rum.core/static rum.core/reactive
+  < rum.core/static
   [{:keys [users likes is-running?] :as params}]
   [:div.tile.is-ancestor
    [:div.tile.is-vertical
