@@ -37,7 +37,7 @@
   < rum.core/static rum.core/reactive
   [state]
   (let [state (rum/react state)]
-    (data/index (:status state))))
+    (data/index state)))
 
 (rum/defc page < rum/reactive [state]
   (data-page state))

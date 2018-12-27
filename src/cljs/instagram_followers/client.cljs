@@ -12,24 +12,36 @@
 (if goog.DEBUG
   (println "Start debug mode :)"))
 
-(defmulti control (fn [event] event))
+(defn dispatch [event] event)
 
-(defmethod control :set [_ status _]
-  {:state (first status)})
+(defmulti control-is-running dispatch)
+
+(defmethod control-is-running :set [a b c]
+  {:state (first b)})
+
+
+(defmulti control-users dispatch)
+
+(defmethod control-users :set [a b c]
+  {:state (first b)})
 
 (defonce reconciler
          (citrus/reconciler
            {:state view/status
-            :controllers {:status control}}))
+            :controllers {:is-running? control-is-running
+                          :users       control-users}}))
 
 ;;make a request to listen for new events on the server
 (defonce es (js/EventSource. "/sse"))
 
 ;;just print them out could swap into an atom and visualize with html component
 (.addEventListener es "message" (fn [e]
-                                  (let [data (cljs.reader/read-string (.-data e))]
-                                    (swap! view/status merge data)
-                                    (citrus/broadcast-sync! reconciler :set data))))
+                                  (let [{:keys [is-running? users]} (cljs.reader/read-string (.-data e))]
+                                    ;(reset! view/status data)
+                                    (when-not (nil? is-running?)
+                                      (citrus/dispatch! reconciler :is-running? :set is-running?))
+                                    (when-not (nil? users)
+                                      (citrus/dispatch! reconciler :users :set users)))))
 
 
 (when-let [app (js/document.getElementById "page")]
