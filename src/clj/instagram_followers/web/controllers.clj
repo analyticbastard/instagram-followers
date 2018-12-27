@@ -121,12 +121,15 @@
   (start [{scheduler :scheduler like-handler :like-handler sse :controller/sse :as component}]
     (let [ch (chan)
           events (:chan sse)]
-      (go-loop []
-        (>! events (merge (liker/get-stats like-handler)
-                          {:is-running? (boolean (some-> (scheduler/job scheduler) deref))}))
-        (let [[_ p] (alts! [ch (timeout 1000)])]
+      (go-loop [prev-state {}]
+        (let [state (merge prev-state
+                           (liker/get-stats like-handler)
+                           {:is-running? (boolean (some-> (scheduler/job scheduler) deref))})
+              [_ p] (alts! [ch (timeout 1000)])]
+          (when-not (= prev-state state)
+            (>! events state))
           (if-not (= p ch)
-            (recur))))
+            (recur state))))
       (assoc component :chan ch)))
   (stop [component]
     (close! (:chan component))
