@@ -20,7 +20,7 @@
 
 (rum/defc index
   < rum.core/static
-  [{:keys [users likes is-running?] :as params}]
+  [{:keys [users likes] :as params}]
   [:div.tile.is-ancestor
    [:div.tile.is-vertical
     [:div.tile
@@ -32,7 +32,7 @@
         [:textarea {:name "two"}]
         [:div.buttons.is-right
          [:button.button.is-medium.is-success {:type "submit"} "Submit"]]]]]
-     [:div.tile.is-parent#running-section {:data-is-running is-running?}
+     [:div.tile.is-parent#running-section
       (running-section params)]]
     [:div.tile.is-parent
      [:article.tile.is-child.notification

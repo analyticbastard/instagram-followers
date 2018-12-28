@@ -4,10 +4,12 @@
     #?(:cljs [instagram-followers.flow :refer [dispatch]])))
 
 
-(defn html-headers [load-scripts?]
+(defn html-headers [load-scripts? & [config]]
   [:head
    [:title "Instagram Love"]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+   (when config
+     [:meta {:name "config" :content (str config)}])
    [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]
    (when load-scripts?
      [:link {:rel         "stylesheet"
@@ -44,9 +46,9 @@
 
 (rum/defc layout
   < rum.core/static
-  [load-scripts? & body]
+  [load-scripts? & [config body]]
   [:html
-   (html-headers load-scripts?)
+   (html-headers load-scripts? config)
    [:body
     [:div#app
      (header {})

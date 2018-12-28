@@ -28,7 +28,7 @@
   component/Lifecycle
   (start [component]
     (assoc component :controller (fn [req]
-                                   (utils/rum-ok (view/layout false (top/index))))))
+                                   (utils/rum-ok (view/layout false nil (top/index))))))
   (stop [component] (dissoc component :controller)))
 
 (defrecord SiteTopLevelController []
@@ -44,11 +44,12 @@
   (start [{:keys [scheduler like-handler] :as component}]
     (assoc component :controller (cemerick.friend/wrap-authorize
                                    (fn [req]
-                                     (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))]
-                                       (->> (merge (liker/get-stats like-handler)
-                                                   {:is-running? is-running?})
+                                     (let [is-running? (boolean (some-> (scheduler/job scheduler) deref))
+                                           init-state (merge (liker/get-stats like-handler)
+                                                        {:is-running? is-running?})]
+                                       (->> init-state
                                             data/index
-                                            (view/layout true)
+                                            (view/layout true init-state)
                                             utils/rum-ok)))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
@@ -76,8 +77,8 @@
                                          (do
                                            (instagram/update-csrftoken! instagram csrftoken)
                                            (instagram/update-cookie! instagram cookie)
-                                           (utils/rum-ok (view/layout true (results/ok))))
-                                         (utils/rum-ok (view/layout true (results/fail))))))
+                                           (utils/rum-ok (view/layout true nil (results/ok))))
+                                         (utils/rum-ok (view/layout true nil (results/fail))))))
                                    #{::auth/user})))
   (stop [component] (dissoc component :controller)))
 
