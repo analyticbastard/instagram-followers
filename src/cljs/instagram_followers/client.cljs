@@ -24,7 +24,6 @@
 (defmulti control-is-running dispatch)
 
 (defmethod control-is-running :init [a [is-running?]]
-  (println "init is-running" is-running? (:is-running? config))
   {:state (if-not (nil? is-running?)
             (first is-running?)
             (:is-running? config))})
@@ -39,7 +38,6 @@
   {:state (first b)})
 
 (defmethod control-users :init [a [users]]
-  (println "init users" users (:users config))
   {:state (if-not (nil? users)
             (first users)
             (:users config))})
