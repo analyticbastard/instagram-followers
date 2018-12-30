@@ -3,7 +3,8 @@
             [clj-http.client :as http]
             [clojure.set :as set]
             [com.stuartsierra.component :as component]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.java.io :as io]))
 
 (def url "https://www.instagram.com/graphql/query/")
 (def query-vars {:fetch_mutual true
@@ -54,24 +55,6 @@
                 :size (:count data))
      :followers (map #(get % :node) (:edges data))}))
 
-(defn get-followers [{:keys [user-data interval npages cookie]}]
-  (loop [cursor nil
-         cumm-followers []
-         n (when npages (dec npages))]
-    (Thread/sleep interval)
-    (let [next-vars (if cursor (assoc query-vars :after cursor) query-vars)
-          {:keys [control followers]} (request url
-                                               (make-query-params user-data next-vars)
-                                               (make-headers @cookie))
-          public-followers (remove :is_private followers)
-          concat-followers (concat cumm-followers public-followers)]
-      (if (and (:next-page? control)
-               (or (not n) (pos? n)))
-        (recur (:cursor control)
-               concat-followers
-               (when n (dec n)))
-        concat-followers))))
-
 (defn get-profile [{:keys [cookie]} {:keys [username] :as user}]
   (let [url (format "https://www.instagram.com/%s/?__a=1" username)
         data (http/get url
@@ -91,7 +74,7 @@
                    (assoc (make-headers @cookie)
                      "X-CSRFToken" @csrftoken)))))
 
-(defrecord Instagram [initial-cookie initial-token npages cookie csrftoken user-data initializing]
+(defrecord Instagram [initial-cookie initial-token npages cookie csrftoken user-data users-file]
   component/Lifecycle
   (start [this]
     (assoc this :cookie (atom initial-cookie)
@@ -110,6 +93,29 @@
 
 (defn get-users [component]
   (-> component :users deref))
+
+(defmulti get-followers (fn [component] (boolean (:users-file component))))
+
+(defmethod get-followers true [{:keys [users-file]}]
+  (slurp (io/resource users-file)))
+
+(defmethod get-followers false [{:keys [user-data interval npages cookie]}]
+  (loop [cursor nil
+         cumm-followers []
+         n (when npages (dec npages))]
+    (Thread/sleep interval)
+    (let [next-vars (if cursor (assoc query-vars :after cursor) query-vars)
+          {:keys [control followers]} (request url
+                                               (make-query-params user-data next-vars)
+                                               (make-headers @cookie))
+          public-followers (remove :is_private followers)
+          concat-followers (concat cumm-followers public-followers)]
+      (if (and (:next-page? control)
+               (or (not n) (pos? n)))
+        (recur (:cursor control)
+               concat-followers
+               (when n (dec n)))
+        concat-followers))))
 
 (defn initialize! [{:keys [initializing users] :as component}]
   (when-not (deref initializing)
