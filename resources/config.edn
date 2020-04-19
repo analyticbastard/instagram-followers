@@ -1,6 +1,9 @@
-{:secrets      #include "secrets.edn"
+{:secrets      #or [#include #join [#env HOME "/.secrets.edn"]
+                    #include #join [#or [#env PWD
+                                         #env CD] "self.edn"]]
  :web          {:options {:port   #profile {:dev     8080
-                                            :default #or [#safelong #env PORT 80]}
+                                            :default #or [#safelong #env PORT
+                                                          80]}
                           :join?  false
                           :async? true}}
  :middleware   {:secret #profile {:dev     "a 16-byte secret"
@@ -10,24 +13,32 @@
                 :password #profile {:dev     #ref [:secrets :password]
                                     :default #env IL_PASSWORD}}
  :scheduler    {:interval #profile {:dev     20000
-                                    :default #or [#safelong #env IL_INTERVAL 1800000]}}
- :like-handler {:max-users #profile {:dev 2
-                                     :default #or [#safelong #env IL_USERS 10]}
-                :max-likes #profile {:dev 2
-                                     :default #or [#safelong #env IL_MAXLIKES 4]}
+                                    :default #or [#safelong #env IL_INTERVAL
+                                                  1800000]}}
+ :like-handler {:max-users #profile {:dev     2
+                                     :default #or [#safelong #env IL_USERS
+                                                   10]}
+                :max-likes #profile {:dev     2
+                                     :default #or [#safelong #env IL_MAXLIKES
+                                                   4]}
                 :interval  #profile {:dev     500
-                                     :default #or [#safelong #env IL_LIKEINTERVAL 10000]}
+                                     :default #or [#safelong #env IL_LIKEINTERVAL
+                                                   10000]}
                 :max-posts #or [#env IL_MAXPOSTS 15]}
  :instagram    {:initial-cookie #or [#env IL_COOKIE
                                      #ref [:secrets :cookie]]
                 :initial-token  #or [#env IL_TOKEN
                                      #ref [:secrets :token]]
                 :npages         #profile {:dev     20
-                                          :default #safelong #env IL_NPAGES}
-                :interval       #profile {:dev     0
-                                          :default #or [#safelong #env IL_WAIT 100]}
+                                          :default #or [#safelong #env IL_NPAGES
+                                                        100]}
+                :interval       #profile {:dev     50
+                                          :default #or [#safelong #env IL_WAIT
+                                                        100]}
                 :user-data      {:id         #or [#env IL_ID
                                                   #ref [:secrets :id]]
                                  :query-hash #or [#env IL_HASH
-                                                  #ref [:secrets :query-hash]]}}
+                                                  #ref [:secrets :query-hash]]}
+                :other-users    #include #join [#or [#env PWD
+                                                     #env CD] "/others.edn"]}
  }

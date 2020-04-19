@@ -27,7 +27,8 @@
                   :web (map->WebServer {})
                   :handler (new-handler :router :bidi)
                   :auth (auth/map->Auth {})
-                  :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile) [:middleware :secret]))]} #_{:middleware [wrap]})
+                  :middleware (new-middleware {:middleware [(partial middleware/wrap (get-in (config/config profile)
+                                                                                             [:middleware :secret]))]})
                   :endpoint (new-endpoint endpoints/endpoint)]
                  [:controller/index (controllers/map->SiteTopLevelController {})
                   :controller/get (controllers/map->SiteLoginController {})

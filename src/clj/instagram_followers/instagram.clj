@@ -33,7 +33,10 @@
 
 (defn- make-query-params [user-data query-vars]
   {:query_hash (:query-hash user-data)
-   :variables (json/encode (assoc query-vars :id (:id user-data)))}) ;(assoc query-vars :user_id (:id user-data))
+   :variables (json/encode (assoc query-vars :id (:id user-data)
+                                             :include_reel true
+                                             :fetch_manual true
+                                             :first 24))})
 
 (defn- make-request-data [headers]
   {:headers headers})
@@ -94,12 +97,7 @@
 (defn get-users [component]
   (-> component :users deref))
 
-(defmulti get-followers (fn [component] (boolean (:users-file component))))
-
-(defmethod get-followers true [{:keys [users-file]}]
-  (slurp (io/resource users-file)))
-
-(defmethod get-followers false [{:keys [user-data interval npages cookie]}]
+(defn- get-user-followers [interval npages cookie user-data]
   (loop [cursor nil
          cumm-followers []
          n (when npages (dec npages))]
@@ -117,10 +115,21 @@
                (when n (dec n)))
         concat-followers))))
 
+(defmulti get-all-followers (fn [component] (boolean (:users-file component))))
+
+(defmethod get-all-followers true [{:keys [users-file]}]
+  (slurp (io/resource users-file)))
+
+(defmethod get-all-followers false [{:keys [user-data other-users interval npages cookie]}]
+  (concat (get-user-followers interval npages cookie user-data)
+          (apply concat
+                 (map (partial get-user-followers interval npages cookie)
+                      other-users))))
+
 (defn initialize! [{:keys [initializing users] :as component}]
   (when-not (deref initializing)
     (reset! initializing true)
-    (let [followers (get-followers component)]
+    (let [followers (get-all-followers component)]
       (log/info (str "Retrieved " (count followers) " followers"))
       (try (reset! users followers)
            (catch Exception e
